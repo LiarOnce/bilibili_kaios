@@ -13,13 +13,75 @@ $.ajaxSettings.xhr = function () {
         return new XMLHttpRequest({ mozSystem: true });
     } catch (e) { }
 }; 
+
+parseUrl = 'http://api.bilibili.com/x/player/playurl?&qn=32&fnval=0&fnver=0&fourk=0' //bvid=BV18t4y1r7yp&cid=277711864
+
 //打开视频
 function openV() {
   const currentIndex = document.activeElement.tabIndex;
   window.location.href = './player/index.html?aid=' + aid[currentIndex] + '&bvid=' + bvid[currentIndex]
 }
-function playV(aid,bvid,page) {
-  $('.video_normal').attr('src','https://player.bilibili.com/player.html?t=0.05&aid=' + aid + '&bvid=' + bvid + '&page=' + page + '&danmaku=0')
+function playV(aid,cid,bvid,page) {
+	//var url = parseUrl+'&cid='+cid+'&bvid='+bvid
+	var url = 'http://www.bilibili.com/video/'+bvid
+	$.ajax({
+        async: false,
+        type: "GET",
+        url: url,
+        success: function (result) {
+			try{ 
+				var playurl = result.match(/readyVideoUrl: \'(.*?)\',/g).toString();
+				playurl = playurl.replace("readyVideoUrl: '","");
+				playurl = playurl.replace("',","");
+				if(playurl)
+				{
+					var player = document.getElementById("player");
+					player.src = playurl;
+					player.width = 240;
+					player.height = 150;
+					player.play();
+				}
+				else{
+					alert("视频直链解析失败！");
+				}
+			}catch(err)
+			{
+				alert("视频直链解析失败 "+err);
+			}
+        },
+        error: function (result) {
+            alert(JSON.stringify(result));
+        },
+        headers: { 
+			'user-agent':'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Mobile Safari/537.36'
+        }
+    }); 
+	/*
+	$.getJSON(url,function(result) { 
+	if(result.data.durl && result.data.durl[0].url)
+	{ 
+		var videourl = result.data.durl[0].url;
+		var player = document.getElementById("player");
+		player.src = videourl;
+		player.play();
+	}
+	else
+	{ 
+		alert("解析视频源失败！");
+		return;
+	}
+   
+    //对焦
+	if(document.querySelectorAll('.itemcomment')[0])
+	{ 
+		document.querySelectorAll('.itemcomment')[0].focus()
+	}
+  }).fail(function(jqXHR, status, error){
+  alert(error+",请求可能被拦截"); });
+  */
+	
+  //$('.video_normal').attr('src','https://player.bilibili.com/player.html?t=0.05&aid=' + aid + '&bvid=' + bvid + '&page=' + page + '&danmaku=0')
+  
    
 } 
 function add0(m){return m<10?'0'+m:m }
@@ -50,8 +112,7 @@ function appendComments(item,tabIndex)
 	$('.items').append('<div class="itemcomment" tabIndex="'+tabIndex+'"><div class="commenthead"> <div class="left_img"> <div class="head"> <img src="'+avatar+'"alt=""></div></div><div class="user-info"><p>'+uname+'</p><span>'+ctime+'</span></div> </div> <div class="comment"> <p>'+content+'</p></div></div>')
 }
 
-//dict：方法（遍历时用于解析的列表：【标题，作者，配图，视频AV号，视频BV号】）（以item开头）
-//each：遍历的位置（以result开头）
+
 function getComments(page) { 
 
    if(page)
@@ -160,7 +221,14 @@ if (e.key != "EndCall") {
       enter();
       break;
     case 'Backspace':
-      window.history.back(1);
+	 if($('#player').attr('class') == 'video_fullscreen') {
+		 document.exitFullscreen();
+        $('#player').attr('class','video_normal');
+	 }else{
+		 //window.history.back(1);
+		 //alert(window.location.search.substring(1));
+		 window.location.href = '../index.html?ref='+getQueryVar('ref')
+	 }
       break;
 	case 'Q':
     case 'SoftLeft':
@@ -252,7 +320,7 @@ function UnLikeUser(uid)
 
 function SoftRight()
 {
-	if($('#softkey-right').text()==='加载中')
+	if($('#softkey-right').text()==='加载中' || $('#player').attr('class') == 'video_fullscreen' )
 	{
 		return;
 	}
@@ -282,14 +350,14 @@ function nav(move) {
 		const currentIndex = document.activeElement.tabIndex;
   var next = currentIndex + move;
   const items = document.querySelectorAll('.item');
-    /* if(next>=items.length)
+    if(next>=items.length)
 	{
-		next = 0;
+		next =items.length-1;
 	}
 	else if(next<0)
 	{
-		next = items.length-1;
-	} */
+		next = 0;
+	} 
 
   const targetElement = items[next];
   if(targetElement)
@@ -303,7 +371,14 @@ function nav(move) {
   {
 	  $('#softkey-center').text('查看');
   }else{
-	   $('#softkey-center').text('');
+	  var video = document.getElementById("player");  
+	  if(video.paused == true) {
+		
+	    $('#softkey-center').text('播放');
+	  }else{
+		
+	    $('#softkey-center').text('暂停');
+	  } 
   }
 	}
 	else if(tab_location===1)
@@ -312,15 +387,15 @@ function nav(move) {
   var next = currentIndex + move;
   
   const items = document.querySelectorAll('.itemcomment');
-/*      if(next>=items.length)
+   if(next>=items.length)
 	{
-		next = 0;
+		next =items.length-1;
 	}
 	else if(next<0)
 	{
-		next = items.length-1;
-	}
-	 */
+		next = 0;
+	} 
+	  
   const targetElement = items[next];
   if(targetElement)
   {
@@ -385,28 +460,29 @@ function softLeft() {
 }
 
 function enter() {   
-/* try{
-	document.domain="bilibili.com";
-	var video=document.getElementById('player').contentWindow.document.getElementsByName("video")[0]; 
-	alert(video)
-  if(video.paused == true) {
-    video.play();
-  }else{
-    video.pause();
-  } 
-}
-catch(err)
-{
-	alert(err);
-} */
   switch(tab_location) {
-    case 0: //简介
-	
+    case 0: //简介  
 	  var currentIndex = document.activeElement.tabIndex;
-	  if(currentIndex==2)
+	  if(currentIndex==2 && $('#player').attr('class') != 'video_fullscreen')
 	  { 
 		  var items = document.querySelectorAll('.item');
 		  alert($(items[currentIndex]).text());
+	  }
+	  else{ 
+		try{  
+			var video = document.getElementById("player");  
+		  if(video.paused == true) {
+			video.play(); 
+			$('#softkey-center').text('暂停');
+		  }else{
+			video.pause(); 
+			$('#softkey-center').text('播放');
+		  } 
+		}
+		catch(err)
+		{
+			alert(err);
+		} 
 	  }
       break;
     case 1: //评论
@@ -449,6 +525,6 @@ document.activeElement.addEventListener('keydown', handleKeydown);
 
 /*  刚开应用该干啥  */
 //设置播放内容
-playV(getQueryVar('aid'),getQueryVar('bvid'),'1');
+playV(getQueryVar('aid'),getQueryVar('cid'),getQueryVar('bvid'),'1');
 getInfo();
 getIsLike()

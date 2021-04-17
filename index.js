@@ -43,6 +43,19 @@ function getById(id) {
     return document.getElementById(id);
 }
 
+var opened_VList = false;
+
+//获取url传值
+function getQueryVar(variable) {
+  var query = window.location.search.substring(1);
+  var vars = query.split("&");
+  for (var i=0;i<vars.length;i++) {
+          var pair = vars[i].split("=");
+          if(pair[0] == variable){return pair[1];}
+  }
+  return(false);
+}
+
 //比较版本号
 function compareVer(oldver,newver)
 {
@@ -70,7 +83,7 @@ function compareVer(oldver,newver)
 }
 
 function appendV(item, tabIndex) {
-    $('.items').append("<div class='item' tabIndex='" + tabIndex + "' data-aid='" + item.aid + "' data-bvid='" + item.bvid + "' data-title='" + item.title + "'><img class='cover' src='" + item.pic +"@96w_60h.jpg"+ "'/><div class='title'>" + item.title + "</div><div class='imgUP'>UP</div><div class='author'>" + item.author + "</div></div>")
+    $('.items').append("<div class='item' tabIndex='" + tabIndex + "' data-aid='" + item.aid + "' data-bvid='" + item.bvid + "' data-title='" + item.title+ "' data-cid='" + item.cid + "'><img class='cover' src='" + item.pic +"@96w_60h.jpg"+ "'/><div class='title'>" + item.title + "</div><div class='imgUP'>UP</div><div class='author'>" + item.author + "</div></div>")
 }
 //添加UP主
 function appendA(uid, nick, sub, image, tabIndex) {
@@ -95,9 +108,19 @@ function openV() {
         var aid = item.data("aid");
         var bvid = item.data("bvid");
         var title = item.data("title"); 
-        window.location.href = './player/index.html?aid=' + aid + '&bvid=' + bvid + '&title=' + title
-    } else {
-
+        var cid = item.data("cid");
+        var ref = {
+          tab_location :tab_location,
+          tabIndex:document.activeElement.tabIndex,
+          nowuserid:nowuserid,
+          opened_VList:opened_VList,
+          lastLikeIndex:lastLikeIndex,
+          nowpage : nowpage,
+          searchdata:searchdata,
+          searchPage:searchPage
+        }
+        window.location.href = './player/index.html?aid=' + aid + '&cid='+cid+'&bvid=' + bvid +'&ref=' + escape(JSON.stringify(ref))
+    } else { 
         alert("读取不到选择的视频！");
         return;
     }
@@ -136,10 +159,18 @@ function getVList(error,data) {
             }
             appendV(item, r + '');
         })
-        //对焦
-        if (document.querySelectorAll('.item')[0]) { 
+        try{ 
+          //对焦 
+          if (document.querySelectorAll('.item')[lastHotIndex]) { 
+              document.querySelectorAll('.item')[lastHotIndex].focus();
+          } 
+          else{
             document.querySelectorAll('.item')[0].focus();
-        } 
+          }
+        }catch(err)
+        {
+          console.log(errr);
+        }
     } 
 };
 
@@ -163,11 +194,23 @@ function getVList2(error, data) {
             }  
             appendV(item, r + '');
         }) 
-        //对焦 
-        if (document.querySelectorAll('.item')[0]) {
+
+
+        if(thisOpenVlist == true || lastOpened_VList) {  
+          //对焦  
+            if (document.querySelectorAll('.item')[thisRef.tabIndex]) {
+
+              document.querySelectorAll('.item')[thisRef.tabIndex].focus();
+          } 
+        }
+        else{
+          //对焦 
+          if (document.querySelectorAll('.item')[0]) {
 
             document.querySelectorAll('.item')[0].focus();
-        } 
+          } 
+        }
+        
     }
 };
 
@@ -198,16 +241,22 @@ function getAList() {
   $.each(result,function(r,i) {
     appendA(i.uid,i.nick,i.sub,i.pic,r + '');
   })
+  try{
     //对焦 
-    if (document.querySelectorAll('.item')[0]) {
+    if (document.querySelectorAll('.item')[lastLikeIndex]) {
 
-        document.querySelectorAll('.item')[0].focus();
+        document.querySelectorAll('.item')[lastLikeIndex].focus();
     } 
+    else{
+      document.querySelectorAll('.item')[0].focus();
+    }
+  }catch(err)
+  {
+    console.log(errr);
+  }
+  
 };
-
-
-
-
+ 
 //获取直播列表
 function getZList() {
     $('.items').empty() //清空列已有的列表
@@ -235,8 +284,24 @@ function getZList() {
     $.each(result, function (r, i) {
         appendZ(i.uid,i.nick,i.title, i.pic,i.online, r + '');
     })
+    var index = 0;
+    if(thisrefLiveIndex)
+    {
+      index = thisrefLiveIndex;
+      thisrefLiveIndex = 0;
+    }
+    else if(lastliveIndex)
+    {
+      index = lastliveIndex;
+    }
     //对焦
-    document.querySelectorAll('.item')[0].focus();
+    if(document.querySelectorAll('.item')[index])
+    {
+      document.querySelectorAll('.item')[index].focus(); 
+    }
+    else{
+      document.querySelectorAll('.item')[0].focus(); 
+    }
 };
 
 function check_update(pack_name, version) {
@@ -364,8 +429,24 @@ var day = 3;
 function tab(move) {
     if (isshowmenu === 1) {
         return;
-    }
+      } 
   var currentIndex = parseInt($('.focus').attr('tabIndex')); //获取目前带有focus的元素的tabIndex
+
+  if(currentIndex ===2)
+  {  
+    lastLikeIndex = document.activeElement.tabIndex;
+    lastOpened_VList = opened_VList;
+    thisRef.tabIndex =  document.activeElement.tabIndex;
+  }
+  else if(currentIndex ===1)
+  {  
+    lastHotIndex = document.activeElement.tabIndex;
+  }
+  else if(currentIndex ===3)
+  {  
+    lastliveIndex = document.activeElement.tabIndex;
+  }
+
   var next = currentIndex + move; //设置移动位置
   if(next>3)
   {
@@ -395,9 +476,21 @@ function load() {
     }
   }catch(e){}
   
+  var items = document.querySelectorAll('li'); //遍历所有的li元素
+  var targetElement = items[tab_location]; //将位置与遍历结果对应
+  if(targetElement != undefined){ //如果没有可供选择的目标
+    $('.focus').attr("class",""); //清除原有效果
+    targetElement.className = "focus"; //设置新效果 
+  } 
+
   switch(tab_location) {
-    case 0: //搜索
+    case 0: //搜索 
+    if(thisRef.searchdata)
+    { //跳转的搜索数据 
+      searchData();
+    }else{ 
       loadSearch();
+    }
           softkey('搜索', '播放','下一页');
       break;
       case 1: //首页推荐
@@ -426,15 +519,31 @@ function load() {
           }
       break;
     case 2: //关注
+    if(thisOpenVlist == true || lastOpened_VList) {  
+        ajax = $.getJSON('http://api.bilibili.com/x/space/arc/search?mid=' 
+        + nowuserid
+        + '&pn='+nowpage, function (result) {
+            if (result.code == 0) {
+                getVList2(false, result);
+            } else {
+                getVList2(result.message, result);
+            } 
+            thisOpenVlist =false;
+            lastOpened_VList = false;
+        }) 
+        softkey('下一页', '播放','返回');
+        opened_VList = true
+    }else{  
       getAList()
+      opened_VList = false //设置二级菜单状态
           softkey('刷新', '选择','选项');
+    }
       break;
    case 3: //直播
         getZList();
           softkey('刷新', '观看','选项');
       break;
-  }
-  opened_VList = false //设置二级菜单状态
+  } 
 }
 
 function add() {
@@ -524,27 +633,44 @@ function addByUserId() {
 var searchPage = 1;
 var searchdata = "";
 function searchData()
-{
+{ 
+   
+  if(thisRef.searchPage){
+    searchPage = thisRef.searchPage;
+    thisRef.searchPage = 0;
+  }
+  if(thisRef.searchdata){
+    searchdata = thisRef.searchdata;
+    thisRef.searchdata = '';
+  } 
+
    if(searchPage===1)
    {
-    if($('#searchInput').val())
-    {
-      var searchtext = $('#searchInput').val();
-      if(searchtext=='')
+     if(searchdata)
+     {
+       
+     }
+     else{
+      if($('#searchInput').val())
       {
-        alert("请输入搜索关键字");
+        var searchtext = $('#searchInput').val();
+        if(searchtext=='')
+        {
+          alert("请输入搜索关键字");
+          return;
+        }
+        else{
+          searchdata = searchtext;
+        }
+      } 
+      else{
+        load();
         return;
       }
-      else{
-        searchdata = searchtext;
-      }
-    } 
-    else{
-      load();
-      return;
-    }
+     }
+   
    }
-   else{ 
+   else{  
      if(searchdata)
      {
        
@@ -562,6 +688,8 @@ function searchData()
       }
      } 
    }
+
+
     var searchurl = "http://api.bilibili.com/x/web-interface/search/type?keyword=" + searchdata + "&search_type=video&page="+searchPage; 
     ajax = $.getJSON(searchurl, function (result) { 
       if(result.data.result)
@@ -574,7 +702,15 @@ function searchData()
             appendV(item, r + '');
         }) 
         //对焦
+        if(
+          document.querySelectorAll('.item')[lastSearchIndex])
+          {
+            document.querySelectorAll('.item')[lastSearchIndex].focus();
+            lastSearchIndex=0;
+          }
+          else{ 
         document.querySelectorAll('.item')[0].focus();
+          }
       }
       else{
         alert("没有更多内容");
@@ -645,7 +781,25 @@ function refresh(ignoremenu) {
         if (isshowmenu) {
             selectMenu();
             return;
-        }
+        } 
+
+        switch(tab_location) {
+          case 1:
+          lastHotIndex = 0;
+        break;
+        case 2: 
+        if(  $('#softkey-left').text()==="刷新")
+        { 
+          lastLikeIndex = 0;
+          nowpage = 1;
+         nowuserid = "";
+        } 
+        case 0:
+          searchdata = "";
+          searchPage = 1;
+          break
+
+      }
     }
    
   switch(tab_location) {
@@ -676,6 +830,7 @@ function refresh(ignoremenu) {
           }
           }else{
             alert("没有下一页了！");
+            nowpage--;
           }
       }) 
       softkey('下一页', '播放','返回');
@@ -690,6 +845,14 @@ function refresh(ignoremenu) {
 
 var nowuserid = "";
 var nowpage = 1;
+//最后选择的那个UP主
+var lastLikeIndex = 0;
+var lastOpened_VList = false;
+//最后查看的热门视频
+var lastHotIndex = 0;
+
+var lastliveIndex = 0;
+
 function enter() { 
     if (isshowmenu) {
         selectMenu();
@@ -712,17 +875,19 @@ function enter() {
           alert("请先选择一个视频！");
           return;
           }; 
+          lastHotIndex = currentIndex;
       openV();
       break;
-    case 2: //关注
+    case 2: //关注 
       if(opened_VList == false) {
         var currentIndex = document.activeElement.tabIndex;
+        lastLikeIndex = currentIndex;
         if(currentIndex<0)
         {
           alert("请先选择一个UP主！");
           return;
           }; 
-          nowuserid = $(document.querySelectorAll(".item")[currentIndex]).data("uid") ;
+          nowuserid = $(document.querySelectorAll(".item")[currentIndex]).data("uid") ; 
           nowpage = 1;
           ajax = $.getJSON('http://api.bilibili.com/x/space/arc/search?mid=' 
           + nowuserid
@@ -746,9 +911,19 @@ function enter() {
         alert("请选择一个直播再进行观看！");
         return;
           }
-          var link = './live/index.html?uid=' + $(document.querySelectorAll(".item")[currentIndex]).data("uid");
-      window.location.href = link;
-      break;
+          var ref = {
+            tab_location :tab_location,
+            tabIndex:document.activeElement.tabIndex,
+            nowuserid:nowuserid,
+            opened_VList:opened_VList,
+            lastLikeIndex:lastLikeIndex,
+            nowpage : nowpage,
+            searchdata:searchdata,
+            searchPage:searchPage
+          }
+          var link = './live/index.html?uid=' + $(document.querySelectorAll(".item")[currentIndex]).data("uid") +'&ref=' + escape(JSON.stringify(ref));
+       window.location.href = link;
+       break;
   }
 }
 
@@ -996,9 +1171,43 @@ catch (err) {
     alert(err);
 }
 
-
+thisRef = {}
+thisOpenVlist = false;
+thisrefLiveIndex = 0;
+var lastSearchIndex= 0;
+function parseRef()
+{ 
+  thisRef = getQueryVar("ref")
+  if(thisRef)
+  {
+    thisRef = JSON.parse(unescape(thisRef));
+  } 
+  else{
+    thisRef = { 
+      tab_location :tab_location,
+      tabIndex:document.activeElement.tabIndex,
+      nowuserid:nowuserid,
+      opened_VList:opened_VList,
+      lastLikeIndex:lastLikeIndex,
+      nowpage : nowpage,
+      searchdata: searchdata,
+      searchPage:searchPage
+    }
+  } 
+  tab_location = thisRef.tab_location;
+  lastHotIndex = thisRef.tabIndex;
+  lastLikeIndex = thisRef.lastLikeIndex;
+  nowpage = thisRef.nowpage;
+  nowuserid = thisRef.nowuserid;
+  thisOpenVlist = thisRef.opened_VList;
+  thisrefLiveIndex = thisRef.tabIndex;
+  lastSearchIndex = thisRef.tabIndex;
+  //document.activeElement.tabIndex = ref.tabIndex;
+  //opened_VList = thisRef.opened_VList;
+  //nowuserid = thisRef.nowuserid;
+}
 //检查更新
-check_update('app://kai.baiyang.bilibili', '1.5') 
+//check_update('app://kai.baiyang.bilibili', '1.6')  
+parseRef()
 //获取首页推荐 
 load()
- 
