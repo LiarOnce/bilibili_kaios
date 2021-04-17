@@ -9,7 +9,14 @@
   </head>
   <body>
     <!--播放器-->
-    <iframe id="player" class="video_normal" src="https://player.bilibili.com/player.html?aid=711734342&bvid=BV1bD4y127RX&cid=224524113&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+	
+	<div id='palyercontainter'>
+		<video id = "player" class="video_normal" controls> </video>
+	</div>
+	
+     <!--<iframe id="player" class="video_normal" src="https://player.bilibili.com/player.html?aid=711734342&bvid=BV1bD4y127RX&cid=224524113&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+	 -->
+	 
     <!--导航栏-->
     <div class="tab">
       <ul>
@@ -57,12 +64,13 @@
     <!--导航键-->
     <footer id="softkeys">
       <div id="softkey-left">全屏</div>
-      <div id="softkey-center"></div>
+      <div id="softkey-center">暂停</div>
       <div id="softkey-right">加载中</div>
     </footer>
   </body>
 </html>
 <!--链接JavaSript-->
+<script src="../lib/flvjs/flv.min.js" charset="utf-8"></script> 
 <script src="../lib/jquery-3.4.1.js"></script>
 <script src="../lib/jquery.cookie.js"></script>
 <script src="./index.js"></script>
