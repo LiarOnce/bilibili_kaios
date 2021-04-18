@@ -14,7 +14,7 @@ $.ajaxSettings.xhr = function () {
     } catch (e) { }
 }; 
 
-parseUrl = 'https://api.bilibili.com/x/player/playurl?&qn=16&fnval=1&fnver=0&fourk=0' //bvid=BV18t4y1r7yp&cid=277711864
+parseUrl = 'https://api.bilibili.com/x/player/playurl?&qn=32&fnval=0&fnver=0&fourk=0' //bvid=BV18t4y1r7yp&cid=277711864
 
 //打开视频
 function openV() {
@@ -22,36 +22,29 @@ function openV() {
   window.location.href = './player/index.html?aid=' + aid[currentIndex] + '&bvid=' + bvid[currentIndex]
 }
 function playV(aid,cid,bvid,page) {
-	var cid = "321640540";
-	var url = parseUrl+'&cid='+cid+'&bvid='+bvid;
-	//var url = 'https://www.bilibili.com/video/'+bvid
+	//var url = parseUrl+'&cid='+cid+'&bvid='+bvid
+	var url = 'https://www.bilibili.com/video/'+bvid
 	$.ajax({
         async: false,
         type: "GET",
         url: url,
-		datatype: "json",
         success: function (result) {
-			try{
-				if(result.data.durl && result.data.durl[0].url)
-				{ 
-					var videourl = result.data.durl[0].url;
+			try{ 
+				var playurl = result.match(/readyVideoUrl: \'(.*?)\',/g).toString();
+				playurl = playurl.replace("readyVideoUrl: '","");
+				playurl = playurl.replace("',","");
+				if(playurl)
+				{
 					var player = document.getElementById("player");
-					$.ajax({
-						async:true,
-						type: "GET",
-						url: videourl,
-						success: function () {
-							player.src = videourl;
-							player.play();
-						},
-						headers: {
-							'Referrer-Policy': 'origin',
-							'Referer': 'https://www.bilibili.com'
-						}
-					});
+					player.src = playurl;
+					player.width = 240;
+					player.height = 150;
+					player.play();
 				}
-			}
-			catch(err)
+				else{
+					alert("视频直链解析失败！");
+				}
+			}catch(err)
 			{
 				alert("视频直链解析失败 "+err);
 			}
@@ -60,11 +53,32 @@ function playV(aid,cid,bvid,page) {
             alert(JSON.stringify(result));
         },
         headers: { 
-			'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Mobile Safari/537.36',
-			'Referrer-Policy': 'origin',
-			'Referer': 'https://www.bilibili.com'
+			'user-agent':'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Mobile Safari/537.36'
         }
-    });
+    }); 
+	/*
+	$.getJSON(url,function(result) { 
+	if(result.data.durl && result.data.durl[0].url)
+	{ 
+		var videourl = result.data.durl[0].url;
+		var player = document.getElementById("player");
+		player.src = videourl;
+		player.play();
+	}
+	else
+	{ 
+		alert("解析视频源失败！");
+		return;
+	}
+   
+    //对焦
+	if(document.querySelectorAll('.itemcomment')[0])
+	{ 
+		document.querySelectorAll('.itemcomment')[0].focus()
+	}
+  }).fail(function(jqXHR, status, error){
+  alert(error+",请求可能被拦截"); });
+  */
 	
   //$('.video_normal').attr('src','https://player.bilibili.com/player.html?t=0.05&aid=' + aid + '&bvid=' + bvid + '&page=' + page + '&danmaku=0')
   
