@@ -42,13 +42,13 @@ function playV(aid,cid,bvid,page) {
 						url: videourl,
 						success: function () {
 							player.src = videourl;
-							player.play();
 						},
 						headers: {
 							'Referrer-Policy': 'origin',
 							'Referer': 'https://www.bilibili.com'
 						}
 					});
+					player.play();
 				}
 			}
 			catch(err)
