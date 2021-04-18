@@ -3,6 +3,7 @@
     <!--链接样式-->
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="referrer" content="origin" />
     <link rel="stylesheet" type="text/css" href="./index.css" />
     <!--设置标题-->
     <title>凯哔哩-播放器</title>
@@ -11,7 +12,7 @@
     <!--播放器-->
 	
 	<div id='palyercontainter'>
-		<video id = "player" class="video_normal" controls> </video>
+		<video id = "player" class="video_normal" controls referrerpolicy="origin"> </video>
 	</div>
 	
      <!--<iframe id="player" class="video_normal" src="https://player.bilibili.com/player.html?aid=711734342&bvid=BV1bD4y127RX&cid=224524113&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
@@ -70,7 +71,7 @@
   </body>
 </html>
 <!--链接JavaSript-->
-<script src="../lib/flvjs/flv.min.js" charset="utf-8"></script> 
-<script src="../lib/jquery-3.4.1.js"></script>
-<script src="../lib/jquery.cookie.js"></script>
+<script src="../lib/flv.min.js" charset="utf-8"></script> 
+<script src="../lib/jquery.min.js"></script>
+<script src="../lib/jquery.cookie.min.js"></script>
 <script src="./index.js"></script>
