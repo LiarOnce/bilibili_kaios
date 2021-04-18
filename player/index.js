@@ -14,7 +14,7 @@ $.ajaxSettings.xhr = function () {
     } catch (e) { }
 }; 
 
-parseUrl = 'http://api.bilibili.com/x/player/playurl?&qn=32&fnval=0&fnver=0&fourk=0' //bvid=BV18t4y1r7yp&cid=277711864
+parseUrl = 'https://api.bilibili.com/x/player/playurl?&qn=16&fnval=1&fnver=0&fourk=0' //bvid=BV18t4y1r7yp&cid=277711864
 
 //打开视频
 function openV() {
@@ -22,29 +22,36 @@ function openV() {
   window.location.href = './player/index.html?aid=' + aid[currentIndex] + '&bvid=' + bvid[currentIndex]
 }
 function playV(aid,cid,bvid,page) {
-	//var url = parseUrl+'&cid='+cid+'&bvid='+bvid
-	var url = 'http://www.bilibili.com/video/'+bvid
+	var cid = "321640540";
+	var url = parseUrl+'&cid='+cid+'&bvid='+bvid;
+	//var url = 'https://www.bilibili.com/video/'+bvid
 	$.ajax({
         async: false,
         type: "GET",
         url: url,
+		datatype: "json",
         success: function (result) {
-			try{ 
-				var playurl = result.match(/readyVideoUrl: \'(.*?)\',/g).toString();
-				playurl = playurl.replace("readyVideoUrl: '","");
-				playurl = playurl.replace("',","");
-				if(playurl)
-				{
+			try{
+				if(result.data.durl && result.data.durl[0].url)
+				{ 
+					var videourl = result.data.durl[0].url;
 					var player = document.getElementById("player");
-					player.src = playurl;
-					player.width = 240;
-					player.height = 150;
-					player.play();
+					$.ajax({
+						async:true,
+						type: "GET",
+						url: videourl,
+						success: function () {
+							player.src = videourl;
+							player.play();
+						},
+						headers: {
+							'Referrer-Policy': 'origin',
+							'Referer': 'https://www.bilibili.com'
+						}
+					});
 				}
-				else{
-					alert("视频直链解析失败！");
-				}
-			}catch(err)
+			}
+			catch(err)
 			{
 				alert("视频直链解析失败 "+err);
 			}
@@ -53,32 +60,11 @@ function playV(aid,cid,bvid,page) {
             alert(JSON.stringify(result));
         },
         headers: { 
-			'user-agent':'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Mobile Safari/537.36'
+			'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Mobile Safari/537.36',
+			'Referrer-Policy': 'origin',
+			'Referer': 'https://www.bilibili.com'
         }
-    }); 
-	/*
-	$.getJSON(url,function(result) { 
-	if(result.data.durl && result.data.durl[0].url)
-	{ 
-		var videourl = result.data.durl[0].url;
-		var player = document.getElementById("player");
-		player.src = videourl;
-		player.play();
-	}
-	else
-	{ 
-		alert("解析视频源失败！");
-		return;
-	}
-   
-    //对焦
-	if(document.querySelectorAll('.itemcomment')[0])
-	{ 
-		document.querySelectorAll('.itemcomment')[0].focus()
-	}
-  }).fail(function(jqXHR, status, error){
-  alert(error+",请求可能被拦截"); });
-  */
+    });
 	
   //$('.video_normal').attr('src','https://player.bilibili.com/player.html?t=0.05&aid=' + aid + '&bvid=' + bvid + '&page=' + page + '&danmaku=0')
   
@@ -125,7 +111,7 @@ function getComments(page) {
 	   commentpage = 1;
 	   page = 1;
    }
-  url = 'http://api.bilibili.com/x/v2/reply?jsonp=jsonp&pn='+page+'&type=1&sort=2&oid='+getQueryVar('aid'); //630102970
+  url = 'https://api.bilibili.com/x/v2/reply?jsonp=jsonp&pn='+page+'&type=1&sort=2&oid='+getQueryVar('aid'); //630102970
   //从网络获取信息
   $.getJSON(url,function(result) { 
 	if(result.data.replies)
@@ -164,7 +150,7 @@ function getQueryVar(variable) {
 //加载视频信息
 function getInfo() {
   var aid = getQueryVar('aid');
-  $.getJSON('http://api.bilibili.com/x/web-interface/view?aid=' + aid, function(result) {
+  $.getJSON('https://api.bilibili.com/x/web-interface/view?aid=' + aid, function(result) {
     var title = result.data.title
     var view = result.data.stat.view
     var danmaku = result.data.stat.danmaku
@@ -269,11 +255,11 @@ function refreshLike()
   var data = localStorage.getItem('like'); //读取数据
   data = JSON.parse(data); //将字符串转换为JSON
   $.each(data,function(r,item){ //给每一个uid更新数据
-    ajax = $.getJSON('http://api.bilibili.com/x/space/acc/info?mid=' + item.uid, function(result) {
+    ajax = $.getJSON('https://api.bilibili.com/x/space/acc/info?mid=' + item.uid, function(result) {
       data[r].pic = result.data.face //头像
       data[r].nick = result.data.name //昵称
     })
-    ajax = $.getJSON('http://api.bilibili.com/x/relation/stat?vmid=' + item.uid, function(result) { 
+    ajax = $.getJSON('https://api.bilibili.com/x/relation/stat?vmid=' + item.uid, function(result) { 
       data[r].sub = result.data.follower //粉丝数
     })
   }) 

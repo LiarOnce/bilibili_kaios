@@ -13,7 +13,7 @@ var thisRoomId = 0;
 function makeLive(room_id) {
 	thisRoomId = room_id;
   //获取媒体源
-  $.getJSON(  'http://api.live.bilibili.com/xlive/web-room/v2/index/getRoomPlayInfo?room_id='+room_id+'&no_playurl=0&mask=0&qn=80&platform=web&protocol=0,1&format=0,2&codec=0,1',function(result) {
+  $.getJSON(  'https://api.live.bilibili.com/xlive/web-room/v2/index/getRoomPlayInfo?room_id='+room_id+'&no_playurl=0&mask=0&qn=80&platform=web&protocol=0,1&format=0,2&codec=0,1',function(result) {
     //错误返回
     if(result.code != 0) {
       console.log(result.code);
@@ -223,7 +223,7 @@ function nav(move) {
 
 //获取直播间号
 function getLiveRoomNumer(uid) {
-  var link = 'http://api.bilibili.com/x/space/acc/info?mid=' + uid
+  var link = 'https://api.bilibili.com/x/space/acc/info?mid=' + uid
   var id = ''
   $.ajax({
     url: link,
