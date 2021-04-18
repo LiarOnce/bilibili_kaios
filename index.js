@@ -2,13 +2,13 @@
 /*  通用函数  */
 //添加视频项目
 //房间初始化信息
-var roominiturl = 'http://api.live.bilibili.com/room/v1/Room/room_init?id=' //直播间id：22966845
+var roominiturl = 'https://api.live.bilibili.com/room/v1/Room/room_init?id=' //直播间id：22966845
 //首页推荐直播列表
-var liverecomlisturl='http://api.live.bilibili.com/xlive/web-interface/v1/webMain/getList?platform=web'
+var liverecomlisturl='https://api.live.bilibili.com/xlive/web-interface/v1/webMain/getList?platform=web'
 //直播间信息
-var roominfourl = 'http://api.live.bilibili.com/room/v1/Room/getRoomInfoOld?mid=' // 用户id：588626186
+var roominfourl = 'https://api.live.bilibili.com/room/v1/Room/getRoomInfoOld?mid=' // 用户id：588626186
 //设置cookie的url，防止接口报错
-var setCookieUrl = 'http://data.bilibili.com/v/web/web_page_view'
+var setCookieUrl = 'https://data.bilibili.com/v/web/web_page_view'
 //喜欢的菜单
 var menulike = ['添加', '删除','清空'] 
 //直播的菜单
@@ -308,7 +308,7 @@ function check_update(pack_name, version) {
   if($.cookie('update_checked') == true) {
     return;
   } 
-  ajax = $.getJSON('http://sss.wmm521.cn/kaios/bilibili_ver.json?_='+(new Date().getTime()), function(result) {
+  ajax = $.getJSON('https://sss.wmm521.cn/kaios/bilibili_ver.json?_='+(new Date().getTime()), function(result) {
     var latest_version = result.version;
     if(compareVer(version,latest_version))
 	{
@@ -502,7 +502,7 @@ function load() {
                   return;
               }
               $('.items').append('正在加载…') //展示加载信息 
-              ajax = $.getJSON('http://api.bilibili.com/x/web-interface/ranking?/region?&day='+day, function (result) {  
+              ajax = $.getJSON('https://api.bilibili.com/x/web-interface/ranking?/region?&day='+day, function (result) {  
                   if (result.code == 0) {
                       getVList(false, result);
                   } else {
@@ -520,7 +520,7 @@ function load() {
       break;
     case 2: //关注
     if(thisOpenVlist == true || lastOpened_VList) {  
-        ajax = $.getJSON('http://api.bilibili.com/x/space/arc/search?mid=' 
+        ajax = $.getJSON('https://api.bilibili.com/x/space/arc/search?mid=' 
         + nowuserid
         + '&pn='+nowpage, function (result) {
             if (result.code == 0) {
@@ -624,7 +624,9 @@ function addByUserId() {
             alert(JSON.stringify(result));
         },
         headers: {
-            "Cookie": "bsource=search_baidu"
+            "Cookie": "bsource=search_baidu",
+            "Referrer-Policy": "origin",
+			      "Referer": "https://www.bilibili.com"
         }
     }); 
    
@@ -690,7 +692,7 @@ function searchData()
    }
 
 
-    var searchurl = "http://api.bilibili.com/x/web-interface/search/type?keyword=" + searchdata + "&search_type=video&page="+searchPage; 
+    var searchurl = "https://api.bilibili.com/x/web-interface/search/type?keyword=" + searchdata + "&search_type=video&page="+searchPage; 
     ajax = $.getJSON(searchurl, function (result) { 
       if(result.data.result)
       {
@@ -760,11 +762,11 @@ function refreshLike()
   var data = localStorage.getItem('like'); //读取数据
   data = JSON.parse(data); //将字符串转换为JSON
   $.each(data,function(r,item){ //给每一个uid更新数据
-    ajax = $.getJSON('http://api.bilibili.com/x/space/acc/info?mid=' + item.uid, function(result) {
+    ajax = $.getJSON('https://api.bilibili.com/x/space/acc/info?mid=' + item.uid, function(result) {
       data[r].pic = result.data.face //头像
       data[r].nick = result.data.name //昵称
     })
-    ajax = $.getJSON('http://api.bilibili.com/x/relation/stat?vmid=' + item.uid, function(result) { 
+    ajax = $.getJSON('https://api.bilibili.com/x/relation/stat?vmid=' + item.uid, function(result) { 
       data[r].sub = result.data.follower //粉丝数
     })
   }) 
@@ -818,7 +820,7 @@ function refresh(ignoremenu) {
      } else if(  $('#softkey-left').text()==="下一页")
      {  
       nowpage++;
-      ajax = $.getJSON('http://api.bilibili.com/x/space/arc/search?mid=' 
+      ajax = $.getJSON('https://api.bilibili.com/x/space/arc/search?mid=' 
       + nowuserid
       + '&pn='+nowpage, function (result) {
           if(result.data.list.vlist.length>0)
@@ -889,7 +891,7 @@ function enter() {
           }; 
           nowuserid = $(document.querySelectorAll(".item")[currentIndex]).data("uid") ; 
           nowpage = 1;
-          ajax = $.getJSON('http://api.bilibili.com/x/space/arc/search?mid=' 
+          ajax = $.getJSON('https://api.bilibili.com/x/space/arc/search?mid=' 
           + nowuserid
           + '&pn='+nowpage, function (result) {
               if (result.code == 0) {
