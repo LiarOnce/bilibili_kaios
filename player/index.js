@@ -14,7 +14,7 @@ $.ajaxSettings.xhr = function () {
     } catch (e) { }
 }; 
 
-parseUrl = 'https://api.bilibili.com/x/player/playurl?&qn=32&fnval=0&fnver=0&fourk=0' //bvid=BV18t4y1r7yp&cid=277711864
+parseUrl = 'http://api.bilibili.com/x/player/playurl?&qn=16&fnval=1&fnver=0&fourk=0' //bvid=BV18t4y1r7yp&cid=277711864
 
 //打开视频
 function openV() {
@@ -32,29 +32,25 @@ function playV(aid,cid,bvid,page) {
 		datatype: "json",
         success: function (result) {
 			try{
+				var player = document.getElementById("player");
 				if(result.data.durl && result.data.durl[0].url)
 				{ 
 					var videourl = result.data.durl[0].url;
-					var player = document.getElementById("player");
+					var videourl_success;
 					$.ajax({
-						async: true,
+						async: false,
 						type: "GET",
 						url: videourl,
 						success: function () {
-							if (flvjs.isSupported()) {
-								var flvPlayer = flvjs.createPlayer({
-									type: 'flv',
-									url: videourl
-								});
-								flvPlayer.attachMediaElement(player);
-								flvPlayer.load(); //加载
-							}
+							player.src = videourl_success;
+							player.width = 240;
+							player.height = 150;
+							player.play();
 						},
 						headers: {
 							'Referer': 'https://www.bilibili.com'
 						}
 					});
-					player.play();
 				}
 			}
 			catch(err)
@@ -66,7 +62,9 @@ function playV(aid,cid,bvid,page) {
             alert(JSON.stringify(result));
         },
         headers: { 
-			'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Mobile Safari/537.36'
+			'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Mobile Safari/537.36',
+			'Referer': 'https://www.bilibili.com',
+			'Referrer-Policy': 'origin, unsafe-url'
         }
     });
 	

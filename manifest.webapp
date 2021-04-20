@@ -18,12 +18,6 @@
         "mobilenetwork": {},
         "systemXHR": {}
     },
-    "redirects": [
-        {
-            "from": "https://wwww.bilibili.com",
-            "to": "/index.html"
-        }
-    ],
     "ime_default_softkey_bar": true,
     "theme_color": "#00a1d6"
 }
