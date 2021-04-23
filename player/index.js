@@ -22,7 +22,8 @@ function openV() {
 	window.location.href = './player/index.html?aid=' + aid[currentIndex] + '&bvid=' + bvid[currentIndex]
 }
 function playV(aid, cid, bvid, page) {
-	//var url = parseUrl+'&cid='+cid+'&bvid='+bvid
+	if (typeof bvid == 'undefined' || bvid == null || bvid == '')
+		bvid = 'av' + aid;
 	var url = 'https://www.bilibili.com/video/' + bvid
 	$.ajax({
 		async: false,
