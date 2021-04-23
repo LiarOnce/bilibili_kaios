@@ -1,0 +1,52 @@
+.dialog {
+  display: none;
+  border: 1px solid #00a1d6;
+  z-index: 999;
+  padding: 16px;
+}
+
+.info {
+  display: block;
+}
+
+p {
+  padding: 6px;
+  margin: 0;
+}
+
+/* Soft Keys */
+#softkeys {
+  z-index: 100;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 30px;
+  background: #dadada;
+  padding: 3px 5px;
+}
+
+#softkeys > * {
+  display: inline-block;
+  width: 72px;
+  padding: 0 5px;
+}
+
+#softkey-left,
+#softkey-right {
+  font-weight: 400;
+  font-size: 14px;
+  color: #323232;
+}
+
+#softkey-right {
+  text-align: right;
+}
+
+#softkey-center {
+  font-weight: 600;
+  font-size: 16px;
+  width: 76px;
+  color: #323232;
+  text-align: center;
+}
