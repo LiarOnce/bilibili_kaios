@@ -65,7 +65,8 @@ function loadBox(fid) {
         var arr = result.data.archives;
         for (var index = 0; index < arr.length; index++) {
             var item = arr[index];
-            $('#container').append("<div class='item' data-aid='" + item.aid + "' data-title='" + item.title + "' data-cid='" + item.cid + "'><img class='cover' src='" + item.pic + "@96w_60h.jpg" + "'/><div class='title'>" + item.title + "</div><div class='imgUP'>UP</div><div class='author'>" + item.author + "</div></div>")
+            $('#container').append("<div class='item' data-aid='" + item.aid + "' data-title='" + item.title + "' data-cid='" + item.cid + "'><img class='cover' src='" +
+                item.pic + "@96w_60h.jpg" + "'/><div class='title'>" + item.title + "</div><div class='imgUP'>UP</div><div class='author'>" + item.author + "</div></div>");
         }
     }
     else {

@@ -1,23 +1,33 @@
 let userId = 0;
-let isOpen = false;
+let isOpen = false, self = false;
 $(function () {
-    var id = $.getData('mid');
-    if (typeof id != 'undefined' && id != null && id != '') {
-        userId = parseInt(id);
-        setUserInfo();
+    var mid = getQueryVar('mid');
+    if (mid === false) {
+        self = true;
+        var id = $.getData('mid');
+        if (typeof id != 'undefined' && id != null && id != '') {
+            userId = parseInt(id);
+            setUserInfo();
+        }
+        else {
+            $('#softkey-left').text('登录');
+            $(".login").show();
+            $(".info").hide();
+        }
     }
     else {
-        $('#softkey-left').text('登录');
-        $(".login").show();
-        $(".info").hide();
+        var id = $.getData('mid');
+        if (id == mid) {
+            self = true;
+            softkey("", "", "选项");
+        }
+        userId = mid;
+        setUserInfo();
     }
     document.activeElement.addEventListener('keydown', handleKeydown);
 });
 
 function handleKeydown(e) {
-    if (e.key != "EndCall") {
-        //e.preventDefault();//清除默认行为（滚动屏幕等）
-    }
     switch (e.key) {
         case 'ArrowUp':
             nav(-1);
@@ -51,18 +61,17 @@ function handleKeydown(e) {
 function navigate() {
     var item = $($('.menuitem')[menuIndex]).attr('data-tag');
     switch (item) {
-        case 'vd':
+        case 'cb':
+            window.location.href = '../contribution/index.html?mid=' + userId;
             break;
         case 'dy':
-            break;
-        case 'ar':
+            window.location.href = '../dynamic/index.html';
             break;
         case 'ct':
             window.location.href = '../collection/index.html';
             break;
         case 'at':
-            break;
-        case 'fs':
+            window.location.href = '../attention/index.html';
             break;
     }
 }
@@ -74,6 +83,10 @@ function showhideMenu() {
         isOpen = false;
     }
     else {
+        if (!self) {
+            $('*[data-tag="at"]').hide();
+            $('*[data-tag="ct"]').hide();
+        }
         $("#menu").show();
         var items = document.querySelectorAll('.menuitem');
         items[0].focus();
@@ -162,12 +175,13 @@ function login() {
 }
 
 function setUserInfo() {
-    var userInfo = $.getData('userInfo');
+    var userInfo = null;
+    if (self)
+        userInfo = $.getData('userInfo');
     if (typeof userInfo == 'undefined' || userInfo == null || userInfo == '') {
         var url = 'https://app.bilibili.com/x/v2/space?ps=10&vmid=' + userId;
         var result = $.getApi(url);
         userInfo = JSON.stringify(result);
-        localStorage.setItem('userInfo', userInfo);
     }
     var info = JSON.parse(userInfo);
     if (info != null) {
@@ -180,7 +194,10 @@ function setUserInfo() {
         $('#fans').text(' 粉丝 ' + info.data.card.fans);
         $('#sign').text(info.data.card.sign);
     }
-    $('#softkey-left').text('注销');
+    if (self) {
+        localStorage.setItem('userInfo', userInfo);
+        $('#softkey-left').text('注销');
+    }
     $(".login").hide();
     $(".info").show();
 }
@@ -202,4 +219,15 @@ function encryptedPwd(pwd) {
         }
     }
     return encrypted;
+}
+
+//获取url传值
+function getQueryVar(variable) {
+    var query = window.location.search.substring(1);
+    var vars = query.split("&");
+    for (var i = 0; i < vars.length; i++) {
+        var pair = vars[i].split("=");
+        if (pair[0] == variable) { return pair[1]; }
+    }
+    return (false);
 }
