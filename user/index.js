@@ -15,6 +15,9 @@ $(function () {
 });
 
 function handleKeydown(e) {
+    if (e.key != "EndCall") {
+        //e.preventDefault();//清除默认行为（滚动屏幕等）
+    }
     switch (e.key) {
         case 'ArrowUp':
             nav(-1);
