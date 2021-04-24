@@ -10,9 +10,9 @@ var roominfourl = 'https://api.live.bilibili.com/room/v1/Room/getRoomInfoOld?mid
 //设置cookie的url，防止接口报错
 var setCookieUrl = 'https://data.bilibili.com/v/web/web_page_view'
 //喜欢的菜单
-var menulike = ['登录', '添加', '删除', '清空']
+var menulike = ['用户', '添加', '删除', '清空']
 //直播的菜单
-var menulive = ['登录', '添加直播间', '添加直播用户', '删除', '清空']
+var menulive = ['用户', '添加直播间', '添加直播用户', '删除', '清空']
 //跨域设置
 $.ajaxSettings.xhr = function () {
   try {
@@ -1016,7 +1016,7 @@ function selectMenu() {
     var menuname = $(item).text();//选中的菜单名称
     if (tab_location == 2) { //关注列表的菜单
       switch (menuname) {
-        case "登录":
+        case "用户":
           LoginPage();
           break;
         case "添加":
@@ -1045,7 +1045,7 @@ function selectMenu() {
         case "清空":
           ClearLive();
           break;
-        case "登录":
+        case "用户":
           LoginPage();
           break;
       }

@@ -1,6 +1,7 @@
 let userId = 0;
+let isOpen = false;
 $(function () {
-    var id = localStorage.getItem('mid');
+    var id = $.getData('mid');
     if (typeof id != 'undefined' && id != null && id != '') {
         userId = parseInt(id);
         setUserInfo();
@@ -10,11 +11,6 @@ $(function () {
         $(".login").show();
         $(".info").hide();
     }
-    $.ajaxSettings.xhr = function () {
-        try {
-            return new XMLHttpRequest({ mozSystem: true });
-        } catch (e) { }
-    };
     document.activeElement.addEventListener('keydown', handleKeydown);
 });
 
@@ -31,15 +27,65 @@ function handleKeydown(e) {
             break;
         case 'Q':
         case 'SoftLeft':
-            if (userId == 0)
-                login();
-            else
-                logout();
+            if (!isOpen) {
+                if (userId == 0)
+                    login();
+                else
+                    logout();
+            }
+            else {
+                navigate();
+            }
             break;
+        case 'Enter':
         case 'Backspace':
-            window.location.href = '../index.html';
+            if (!isOpen)
+                window.location.href = '../index.html';
+            break;
+        case 'E':
+        case 'SoftRight':
+            showhideMenu();
             break;
     }
+}
+function navigate() {
+    var item = $($('.menuitem')[menuIndex]).attr('data-tag');
+    switch (item) {
+        case 'vd':
+            break;
+        case 'dy':
+            break;
+        case 'ar':
+            break;
+        case 'ct':
+            window.location.href = '../collection/index.html';
+            break;
+        case 'at':
+            break;
+        case 'fs':
+            break;
+    }
+}
+
+function showhideMenu() {
+    if (isOpen) {
+        $("#menu").hide();
+        softkey("登录", "主页", "选项");
+        isOpen = false;
+    }
+    else {
+        $("#menu").show();
+        var items = document.querySelectorAll('.menuitem');
+        items[0].focus();
+        softkey("选择", "", "返回");
+        isOpen = true;
+    }
+}
+
+function softkey(left, center, right) {
+    $('#softkey-left').text(left);
+    $('#softkey-center').text(center);
+    $('#softkey-right').text(right);
 }
 
 function logout() {
@@ -54,20 +100,38 @@ function logout() {
     localStorage.removeItem('userInfo');
 }
 
-var current = -1;
+var current = -1, menuIndex = 0;
 function nav(move) {
-    var next = current + move;
-    const items = document.querySelectorAll('.item');
-    if (next >= items.length) {
-        next = items.length - 1;
+    if (!isOpen) {
+        var next = current + move;
+        const items = document.querySelectorAll('.item');
+        if (next >= items.length) {
+            next = items.length - 1;
+        }
+        else if (next < 0) {
+            next = 0;
+        }
+        const targetElement = items[next];
+        if (targetElement) {
+            current = next;
+            targetElement.focus();
+        }
     }
-    else if (next < 0) {
-        next = 0;
-    }
-    const targetElement = items[next];
-    if (targetElement) {
-        current = next;
-        targetElement.focus();
+    else {
+        var next = menuIndex + move;
+        var items = document.querySelectorAll('.menuitem');
+        if (next >= items.length) {
+            next = items.length - 1;
+        }
+        else if (next < 0) {
+            next = 0;
+        }
+        const targetElement = items[next];
+        if (targetElement) {
+            console.log(targetElement)
+            menuIndex = next;
+            targetElement.focus();
+        }
     }
 }
 
@@ -78,60 +142,32 @@ function login() {
         alert('账号或者密码不能为空！');
     }
     else {
-        var ts = getTs();
         var passwd = encryptedPwd(pwd);
-        console.log(passwd)
-        var content = 'username=' + encodeURIComponent(name) + '&password=' + encodeURIComponent(passwd) + '&gee_type=10&appkey=' + tvKey + '&mobi_app=android&platform=android&ts=' + ts;
-        content += "&sign=" + getSign(content, tvSecret);
-        console.log(content)
-        $.ajax({
-            url: 'https://passport.bilibili.com/api/v3/oauth2/login',
-            data: content,
-            type: 'post',
-            headers: {
-                'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Mobile Safari/537.36'
-            },
-            success: function (data) {
-                if (data.code == 0) {
-                    var token = data.data.token_info;
-                    userId = token.mid;
-                    localStorage.setItem('mid', token.mid);
-                    localStorage.setItem('access_token', token.access_token);
-                    localStorage.setItem('refresh_token', token.refresh_token);
-                    localStorage.setItem('expires_in', (token.expires_in + ts));
-                    alert('登录成功！');
-                    setUserInfo();
-                }
-                else {
-                    alert('登录失败！' + data.message);
-                }
-            },
-            error: function () {
-                alert('登录失败！');
-            }
-        });
+        var content = 'username=' + encodeURIComponent(name) + '&password=' + encodeURIComponent(passwd) + '&gee_type=10';
+        var data = $.postApi('https://passport.bilibili.com/api/v3/oauth2/login', content, tv);
+        if (data.code == 0) {
+            var token = data.data.token_info;
+            userId = token.mid;
+            localStorage.setItem('mid', token.mid);
+            localStorage.setItem('access_token', token.access_token);
+            localStorage.setItem('refresh_token', token.refresh_token);
+            localStorage.setItem('expires_in', (token.expires_in + $.getTs()));
+            alert('登录成功！');
+            setUserInfo();
+        }
+        else {
+            alert('登录失败！' + data.message);
+        }
     }
 }
 
 function setUserInfo() {
-    var access_token = localStorage.getItem('access_token');
-    var userInfo = localStorage.getItem('userInfo');
+    var userInfo = $.getData('userInfo');
     if (typeof userInfo == 'undefined' || userInfo == null || userInfo == '') {
-        var url = 'https://app.bilibili.com/x/v2/space?access_key=' + access_token + '&appkey=' + androidKey + '&platform=wp&ps=10&ts=' + getTs() +
-            '000&vmid=' + userId + '&build=' + build + '&mobi_app=android';
-        url += "&sign=" + getSign(url);
-        $.ajax({
-            url: url,
-            type: "get",
-            async: false,
-            headers: {
-                'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Mobile Safari/537.36'
-            },
-            success: function (data) {
-                userInfo = JSON.stringify(data);
-                localStorage.setItem('userInfo', userInfo);
-            }
-        });
+        var url = 'https://app.bilibili.com/x/v2/space?ps=10&vmid=' + userId;
+        var result = $.getApi(url);
+        userInfo = JSON.stringify(result);
+        localStorage.setItem('userInfo', userInfo);
     }
     var info = JSON.parse(userInfo);
     if (info != null) {
@@ -151,31 +187,19 @@ function setUserInfo() {
 
 function encryptedPwd(pwd) {
     var encrypted = pwd;
-    var content = 'appkey=' + androidKey + '&mobi_app=android&platform=android&ts=' + getTs();
-    content += "&sign=" + getSign(content);
-    $.ajax({
-        url: "https://passport.bilibili.com/api/oauth2/getKey",
-        data: content,
-        type: "post",
-        async: false,
-        headers: {
-            'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Mobile Safari/537.36'
-        },
-        success: function (data) {
-            if (data != null && data.code == 0) {
-                var key = data.data.key;
-                var hash = data.data.hash;
-                key = key.replace(/\n/g, '').replace('-----BEGIN PUBLIC KEY-----', '').replace('-----END PUBLIC KEY-----', '');
-                var decrypt = new JSEncrypt();
-                decrypt.setPublicKey(key);
-                var hashPass = hash.concat(pwd);
-                encrypted = decrypt.encrypt(hashPass);
-                if (typeof encrypted == 'boolean' && encrypted == false) {
-                    //加密失败，放弃挣扎吧
-                    encrypted = pwd;
-                }
-            }
+    var data = $.postApi("https://passport.bilibili.com/api/oauth2/getKey", '', android);
+    if (data != null && data.code == 0) {
+        var key = data.data.key;
+        var hash = data.data.hash;
+        key = key.replace(/\n/g, '').replace('-----BEGIN PUBLIC KEY-----', '').replace('-----END PUBLIC KEY-----', '');
+        var decrypt = new JSEncrypt();
+        decrypt.setPublicKey(key);
+        var hashPass = hash.concat(pwd);
+        encrypted = decrypt.encrypt(hashPass);
+        if (typeof encrypted == 'boolean' && encrypted == false) {
+            //加密失败，放弃挣扎吧
+            encrypted = pwd;
         }
-    });
+    }
     return encrypted;
 }
