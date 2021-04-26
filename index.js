@@ -44,18 +44,6 @@ function getById(id) {
 }
 
 var opened_VList = false;
-
-//获取url传值
-function getQueryVar(variable) {
-  var query = window.location.search.substring(1);
-  var vars = query.split("&");
-  for (var i = 0; i < vars.length; i++) {
-    var pair = vars[i].split("=");
-    if (pair[0] == variable) { return pair[1]; }
-  }
-  return (false);
-}
-
 //比较版本号
 function compareVer(oldver, newver) {
   var a = oldver.split('.');
@@ -1143,7 +1131,7 @@ thisOpenVlist = false;
 thisrefLiveIndex = 0;
 var lastSearchIndex = 0;
 function parseRef() {
-  thisRef = getQueryVar("ref")
+  thisRef = $.getQueryVar("ref")
   if (thisRef) {
     thisRef = JSON.parse(unescape(thisRef));
   }

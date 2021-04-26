@@ -17,7 +17,7 @@
   padding: 3px 5px;
 }
 
-#softkeys > * {
+#softkeys>* {
   display: inline-block;
   width: 72px;
   padding: 0 5px;
@@ -44,6 +44,14 @@
   text-align: center;
 }
 
+#container {
+  overflow-x: hidden;
+  overflow-y: auto;
+  width: 100%;
+  height: calc(100% - 30px);
+  margin-bottom: 30px;
+}
+
 .item {
   position: relative;
   width: 100%;
@@ -53,7 +61,7 @@
   overflow-x: hidden;
 }
 
-.item:focus {
+.item.select {
   background-color: #00a1d6;
   color: white;
 }

@@ -110,6 +110,8 @@ function nav(move) {
         if (targetElement) {
             current = next;
             targetElement.focus();
+            $('.item').removeClass('select');
+            $(targetElement).addClass('select');
         }
     }
     else {
@@ -125,6 +127,8 @@ function nav(move) {
         if (targetElement) {
             menu = next;
             targetElement.focus();
+            $('.menuitem').removeClass('select');
+            $(targetElement).addClass('select');
         }
 
     }

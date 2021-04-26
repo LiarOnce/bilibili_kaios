@@ -49,6 +49,8 @@ function nav(move) {
     if (targetElement) {
         current = next;
         targetElement.focus();
+        $('.item').removeClass('select');
+        $(targetElement).addClass('select');
     }
 }
 

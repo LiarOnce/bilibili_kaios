@@ -40,17 +40,6 @@ function makeLive(room_id) {
   })
 }
 
-//获取url传值
-function getQueryVar(variable) {
-  var query = window.location.search.substring(1);
-  var vars = query.split("&");
-  for (var i = 0; i < vars.length; i++) {
-    var pair = vars[i].split("=");
-    if (pair[0] == variable) { return pair[1]; }
-  }
-  return (false);
-}
-
 function setData(name, sign, title) {
   $('.items').empty();
   $('.items').append("<div class='item' tabIndex='0'><p>主播名称：" + name + "</p></div> ");
@@ -136,7 +125,7 @@ function getComments(page) {
 function load() {
   switch (tab_location) {
     case 0: //简介
-      getLiveRoomNumer(getQueryVar('uid'))
+      getLiveRoomNumer($.getQueryVar('uid'))
       var video = document.getElementById("player");
       if (video.paused == true) {
 
@@ -278,7 +267,7 @@ function handleKeydown(e) {
       break;
     case 'Backspace':
       //window.history.back(1);
-      window.location.href = '../index.html?ref=' + getQueryVar('ref')
+      window.location.href = '../index.html?ref=' + $.getQueryVar('ref')
       break;
     case 'Q':
     case 'SoftLeft':
@@ -312,4 +301,4 @@ document.activeElement.addEventListener('keydown', handleKeydown);
 
 /* 启动后行为 */
 ;
-makeLive(getLiveRoomNumer(getQueryVar('uid')));
+makeLive(getLiveRoomNumer($.getQueryVar('uid')));

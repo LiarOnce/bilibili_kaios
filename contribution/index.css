@@ -6,11 +6,6 @@
   text-align: center;
 }
 
-#container {
-  overflow-x: hidden;
-  overflow-y: auto;
-}
-
 /* Soft Keys */
 #softkeys {
   z-index: 100;
@@ -23,7 +18,7 @@
   padding: 3px 5px;
 }
 
-#softkeys > * {
+#softkeys>* {
   display: inline-block;
   width: 72px;
   padding: 0 5px;
@@ -51,6 +46,14 @@
   text-align: center;
 }
 
+#container {
+  overflow-x: hidden;
+  overflow-y: auto;
+  width: 100%;
+  height: calc(100% - 30px);
+  margin-bottom: 30px;
+}
+
 /* Item */
 .items {
   width: 100%;
@@ -70,7 +73,7 @@
   outline: none;
 }
 
-.item:focus {
+.item.select {
   background-color: #00a1d6;
   color: white;
 }
@@ -115,10 +118,7 @@
   color: rgb(115, 115, 115);
 }
 
-.item:focus .author {
-  color: white;
-}
-
-.item:focus .imgUP {
+.item.select .author,
+.item.select .imgUP {
   color: white;
 }

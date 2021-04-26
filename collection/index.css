@@ -8,6 +8,9 @@
 #container {
   overflow-x: hidden;
   overflow-y: auto;
+  width: 100%;
+  height: calc(100% - 30px);
+  margin-bottom: 30px;
 }
 
 /* Soft Keys */
@@ -22,7 +25,7 @@
   padding: 3px 5px;
 }
 
-#softkeys > * {
+#softkeys>* {
   display: inline-block;
   width: 72px;
   padding: 0 5px;
@@ -68,6 +71,7 @@
   width: 98%;
   background: white;
   margin: 3px;
+  list-style: none;
 }
 
 .menuitem {
@@ -80,7 +84,7 @@
   line-height: 30px;
 }
 
-.menuitem:focus {
+.menuitem.select {
   background-color: #00a1d6;
   color: white;
 }
@@ -104,7 +108,7 @@
   outline: none;
 }
 
-.item:focus {
+.item.select {
   background-color: #00a1d6;
   color: white;
 }
@@ -148,10 +152,7 @@
   color: rgb(115, 115, 115);
 }
 
-.item:focus .author {
-  color: white;
-}
-
+.item.select .author,
 .item:focus .imgUP {
   color: white;
 }
