@@ -57,7 +57,6 @@ function nav(move) {
 function loadFollow() {
     var url = 'https://api.bilibili.com/x/relation/followings?vmid=' + userId + '&ps=30&pn=' + page + '&order=desc';
     var result = $.getApi(url);
-    console.log(result);
     if (result.code == 0) {
         var arr = result.data.list;
         total = result.data.total;

@@ -24,24 +24,29 @@ $.extend({
     },
     sendLiveDanmaku: function (rid, msg) {
         var json = null;
-        var ts = $.getTs();
-        var mid = $.getQueryVar('mid');
-        var access_token = this.getData('access_token');
-        var content = 'cid=' + rid + '&mid=' + mid + '&msg=' + msg + '&rnd=' + ts + '&mode=1&pool=0&type=json&color=16777215&fontsize=25&playTime=0.0';
-        var url = 'https://api.live.bilibili.com/api/sendmsg?access_key=' + access_token + '&actionKey=appkey&appkey=' + android.key + '&build=' + build + '&device=android&mobi_app=android&platform=android&ts=' + ts;
-        url += "&sign=" + $.getSign(url);
-        $.ajax({
-            url: url,
-            data: content,
-            type: 'post',
-            async: false,
-            headers: {
-                'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Mobile Safari/537.36'
-            },
-            success: function (data) {
-                json = data;
-            }
-        });
+        try {
+            var ts = $.getTs();
+            var mid = $.getQueryVar('mid');
+            var access_token = this.getData('access_token');
+            var content = 'cid=' + rid + '&mid=' + mid + '&msg=' + msg + '&rnd=' + ts + '&mode=1&pool=0&type=json&color=16777215&fontsize=25&playTime=0.0';
+            var url = 'https://api.live.bilibili.com/api/sendmsg?access_key=' + access_token + '&actionKey=appkey&appkey=' + android.key + '&build=' + build + '&device=android&mobi_app=android&platform=android&ts=' + ts;
+            url += "&sign=" + $.getSign(url);
+            $.ajax({
+                url: url,
+                data: content,
+                type: 'post',
+                async: false,
+                headers: {
+                    'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Mobile Safari/537.36'
+                },
+                success: function (data) {
+                    json = data;
+                }
+            });
+        }
+        catch (e) {
+            console.log(e);
+        }
         return json;
     },
     listenLiveDanmaku: function (rid) {

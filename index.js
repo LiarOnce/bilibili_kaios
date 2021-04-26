@@ -246,38 +246,38 @@ function getZList() {
   }
   $('.items').append('正在加载…') //展示加载信息
 
-  var result = localStorage.getItem('live') //从本地获取信息 
   try {
-    var result = JSON.parse(result)
-  } catch (e) {
-    localStorage.setItem('live', "[]")
+    var url = 'https://api.live.bilibili.com/xlive/app-interface/v1/relation/liveAnchor?actionKey=appkey&device=android&qn=0&sortRule=0&filterRule=0';
+    var data = $.getApi(url, 'text');
+    $('.items').empty(); //清空列已有的列表
+    console.log(data)
+    if (data != null && data.code == 0) {
+      var result = data.data.rooms;
+      console.log(result)
+      //建立列表
+      $.each(result, function (r, i) {
+        appendZ(i.uid, i.uname, i.title, i.cover, i.online, r + '');
+      })
+      var index = 0;
+      if (thisrefLiveIndex) {
+        index = thisrefLiveIndex;
+        thisrefLiveIndex = 0;
+      }
+      else if (lastliveIndex) {
+        index = lastliveIndex;
+      }
+      //对焦
+      if (document.querySelectorAll('.item')[index]) {
+        document.querySelectorAll('.item')[index].focus();
+      }
+      else {
+        document.querySelectorAll('.item')[0].focus();
+      }
+    }
+  }
+  catch (e) {
+    console.log(e)
     getZList()
-  }
-
-  $('.items').empty() //清空列已有的列表
-
-  if (result.length == 0) {
-    $('.items').append('您还没有添加过直播哦<br>按“选项>添加”添加试试')
-    return
-  }
-  //建立列表
-  $.each(result, function (r, i) {
-    appendZ(i.uid, i.nick, i.title, i.pic, i.online, r + '');
-  })
-  var index = 0;
-  if (thisrefLiveIndex) {
-    index = thisrefLiveIndex;
-    thisrefLiveIndex = 0;
-  }
-  else if (lastliveIndex) {
-    index = lastliveIndex;
-  }
-  //对焦
-  if (document.querySelectorAll('.item')[index]) {
-    document.querySelectorAll('.item')[index].focus();
-  }
-  else {
-    document.querySelectorAll('.item')[0].focus();
   }
 };
 

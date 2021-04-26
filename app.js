@@ -69,7 +69,7 @@ $.extend({
     },
     getSign: function (url, secret) {
         if (typeof secret == 'undefined')
-            secret = androidSecret;
+            secret = android.Secret;
         var str = url.substring(url.indexOf("?", 4) + 1);
         var list = str.split('&');
         list.sort();
