@@ -62,26 +62,8 @@ $.extend({
                     { 'host': 'livecmt-1.bilibili.com', 'port': 2243 }];
                 var index = Math.floor(Math.random() * servers.length);
                 var address = 'ws://' + servers[index].host + '/sub';
-                var ws = new WebSocket(address);
-                ws.onopen = function () {
-                    this.sendHeartbeat();
-                };
-                ws.onmessage = function (evt) {
-                    this.handleMessage(evt.data);
-                };
-                ws.onclose = function () {
-                    alert('弹幕服务器断开连接');
-                };
+                new liveDanmaku(rid, address);
             }
         });
-    },
-    sendHeartbeat: function () {
-
-    },
-    sendMessage: function () {
-
-    },
-    handleMessage: function (data) {
-
     }
 });
