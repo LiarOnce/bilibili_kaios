@@ -14,32 +14,39 @@ function makeLive(room_id) {
   thisRoomId = room_id;
   $.listenLiveDanmaku(thisRoomId);
   //获取媒体源
-  $.getJSON('https://api.live.bilibili.com/xlive/web-room/v2/index/getRoomPlayInfo?room_id=' + room_id + '&no_playurl=0&mask=0&qn=80&platform=web&protocol=0,1&format=0,2&codec=0,1', function (result) {
-    //错误返回
-    if (result.code != 0) {
-      alert('获取直播地址失败！');
-      return;
-    };
-    if (result.data.playurl_info) {
-      //设置媒体源
-      var data = result.data.playurl_info.playurl.stream[0].format[0].codec[0];
-      var url = data.url_info[0].host + data.base_url + data.url_info[0].extra;
-      console.log(url);
-      //创建播放器
-      player = flvjs.createPlayer({
-        type: 'flv',
-        isLive: true,
-        url: url,
-        cors: true
-      });
-      player.attachMediaElement(document.getElementById('player'));
-      player.load()
-      player.play()
-    }
-    else {
-      alert("直播不在进行中！");
-    }
-  })
+  $.getJSON('https://api.live.bilibili.com/xlive/web-room/v2/index/getRoomPlayInfo?room_id=' + room_id +
+    '&qn=80&platform=web&protocol=0,1&format=0,2&codec=0,1&ptype=8', function (result) {
+      //错误返回
+      if (result.code != 0) {
+        alert('获取直播地址失败！');
+        return;
+      };
+      if (result.data.playurl_info) {
+        console.log(result);
+        //设置媒体源
+        var data = result.data.playurl_info.playurl.stream[0].format[0].codec[0];
+        var url = data.url_info[0].host + data.base_url + data.url_info[0].extra;
+        try {
+          console.log(url)
+          //创建播放器
+          player = flvjs.createPlayer({
+            type: 'flv',
+            isLive: true,
+            url: url
+          });
+          player.attachMediaElement(document.getElementById('player'));
+          player.load();
+          player.play();
+        }
+        catch (e) {
+          console.log(e);
+          alert('初始化播放器失败！');
+        }
+      }
+      else {
+        alert("直播不在进行中！");
+      }
+    })
 }
 
 function setData(name, sign, title) {

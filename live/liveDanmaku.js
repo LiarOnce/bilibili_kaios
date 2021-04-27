@@ -29,7 +29,7 @@ function liveDanmaku(rid, url) {
         }
     };
     this.socket.onclose = function (e) {
-        console.log(e);
+        console.log('close code:' + e.code);
         alert('弹幕服务器断开连接');
     };
     this.sendHeartbeat = function () {
