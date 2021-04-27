@@ -3,7 +3,8 @@ function liveDanmaku(rid, url) {
     this.timer = null;
     this.danmus = [];
     this.socket = new WebSocket(url);
-    ws.onopen = function () {
+    this.socket.onopen = function () {
+        console.log('onopen');
         const firstData = {
             'uid': 0,
             'roomid': parseInt(this.roomid, 10),
@@ -18,7 +19,8 @@ function liveDanmaku(rid, url) {
             this.sendHeartbeat();
         }, 30000);
     };
-    ws.onmessage = function (msg) {
+    this.socket.onmessage = function (msg) {
+        console.log('onmessage');
         var reader = new FileReader();
         reader.readAsArrayBuffer(msg.data);
         reader.onload = function () {
@@ -26,7 +28,8 @@ function liveDanmaku(rid, url) {
             this.handleMessage(content);
         }
     };
-    ws.onclose = function () {
+    this.socket.onclose = function (e) {
+        console.log(e);
         alert('弹幕服务器断开连接');
     };
     this.sendHeartbeat = function () {
@@ -34,6 +37,7 @@ function liveDanmaku(rid, url) {
         socket.send(this.sendData(heartData, 1, 2, 1));
     };
     this.sendMessage = function (data, p, o, s) {
+        console.log('send');
         let dataUint8Array = this.stringToUint(data);
         let buffer = new ArrayBuffer(dataUint8Array.byteLength + 16);
         let dv = new DataView(buffer);

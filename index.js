@@ -245,33 +245,36 @@ function getZList() {
     return;
   }
   $('.items').append('正在加载…') //展示加载信息
-
   try {
     var url = 'https://api.live.bilibili.com/xlive/app-interface/v1/relation/liveAnchor?actionKey=appkey&device=android&qn=0&sortRule=0&filterRule=0';
     var data = $.getApi(url, 'text');
     $('.items').empty(); //清空列已有的列表
-    console.log(data)
     if (data != null && data.code == 0) {
       var result = data.data.rooms;
-      console.log(result)
-      //建立列表
-      $.each(result, function (r, i) {
-        appendZ(i.uid, i.uname, i.title, i.cover, i.online, r + '');
-      })
-      var index = 0;
-      if (thisrefLiveIndex) {
-        index = thisrefLiveIndex;
-        thisrefLiveIndex = 0;
-      }
-      else if (lastliveIndex) {
-        index = lastliveIndex;
-      }
-      //对焦
-      if (document.querySelectorAll('.item')[index]) {
-        document.querySelectorAll('.item')[index].focus();
+      if (result != null && result.length > 0) {
+        //建立列表
+        $.each(result, function (r, i) {
+          appendZ(i.uid, i.uname, i.title, i.cover, i.online, r + '');
+        })
+        var index = 0;
+        if (thisrefLiveIndex) {
+          index = thisrefLiveIndex;
+          thisrefLiveIndex = 0;
+        }
+        else if (lastliveIndex) {
+          index = lastliveIndex;
+        }
+        //对焦
+        if (document.querySelectorAll('.item')[index]) {
+          document.querySelectorAll('.item')[index].focus();
+        }
+        else {
+          if ($('.item').length > 0)
+            document.querySelectorAll('.item')[0].focus();
+        }
       }
       else {
-        document.querySelectorAll('.item')[0].focus();
+        $('.items').append('关注的UP没有一个在直播qaq~');
       }
     }
   }

@@ -2,9 +2,11 @@ let userId = 0;
 let isOpen = false, self = false;
 $(function () {
     var mid = $.getQueryVar('mid');
+    console.log(mid)
     if (mid === false) {
         self = true;
         var id = $.getData('mid');
+        console.log(id)
         if (typeof id != 'undefined' && id != null && id != '') {
             userId = parseInt(id);
             setUserInfo();
