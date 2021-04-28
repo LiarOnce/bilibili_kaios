@@ -12,43 +12,41 @@ var thisRoomId = 0;
 //获取直播流媒体源,创建流式播放器（用的是flv.js的API）
 function makeLive(room_id) {
   thisRoomId = room_id;
+  $.listenLiveDanmaku(thisRoomId);
   //获取媒体源
-  $.getJSON('https://api.live.bilibili.com/xlive/web-room/v2/index/getRoomPlayInfo?room_id=' + room_id + '&no_playurl=0&mask=0&qn=80&platform=web&protocol=0,1&format=0,2&codec=0,1', function (result) {
-    //错误返回
-    if (result.code != 0) {
-      console.log(result.code);
-      return;
-    };
-    if (result.data.playurl_info) {
-      //设置媒体源
-      var data = result.data.playurl_info.playurl.stream[0].format[0].codec[0];
-      var url = data.url_info[0].host + data.base_url + data.url_info[0].extra;
-      //console.log(url); 
-
-      //创建播放器
-      player = flvjs.createPlayer({
-        type: 'flv',
-        url: url
-      });
-      player.attachMediaElement(document.getElementById('player'));
-      player.load()
-      player.play()
-    }
-    else {
-      alert("直播不在进行中！");
-    }
-  })
-}
-
-//获取url传值
-function getQueryVar(variable) {
-  var query = window.location.search.substring(1);
-  var vars = query.split("&");
-  for (var i = 0; i < vars.length; i++) {
-    var pair = vars[i].split("=");
-    if (pair[0] == variable) { return pair[1]; }
-  }
-  return (false);
+  $.getJSON('https://api.live.bilibili.com/xlive/web-room/v2/index/getRoomPlayInfo?room_id=' + room_id +
+    '&qn=80&platform=web&protocol=0,1&format=0,2&codec=0,1&ptype=8', function (result) {
+      //错误返回
+      if (result.code != 0) {
+        alert('获取直播地址失败！');
+        return;
+      };
+      if (result.data.playurl_info) {
+        console.log(result);
+        //设置媒体源
+        var data = result.data.playurl_info.playurl.stream[0].format[0].codec[0];
+        var url = data.url_info[0].host + data.base_url + data.url_info[0].extra;
+        try {
+          console.log(url)
+          //创建播放器
+          player = flvjs.createPlayer({
+            type: 'flv',
+            isLive: true,
+            url: url
+          });
+          player.attachMediaElement(document.getElementById('player'));
+          player.load();
+          player.play();
+        }
+        catch (e) {
+          console.log(e);
+          alert('初始化播放器失败！');
+        }
+      }
+      else {
+        alert("直播不在进行中！");
+      }
+    })
 }
 
 function setData(name, sign, title) {
@@ -136,7 +134,7 @@ function getComments(page) {
 function load() {
   switch (tab_location) {
     case 0: //简介
-      getLiveRoomNumer(getQueryVar('uid'))
+      getLiveRoomNumer($.getQueryVar('uid'))
       var video = document.getElementById("player");
       if (video.paused == true) {
 
@@ -278,7 +276,7 @@ function handleKeydown(e) {
       break;
     case 'Backspace':
       //window.history.back(1);
-      window.location.href = '../index.html?ref=' + getQueryVar('ref')
+      window.location.href = '../index.html?ref=' + $.getQueryVar('ref')
       break;
     case 'Q':
     case 'SoftLeft':
@@ -312,4 +310,4 @@ document.activeElement.addEventListener('keydown', handleKeydown);
 
 /* 启动后行为 */
 ;
-makeLive(getLiveRoomNumer(getQueryVar('uid')));
+makeLive(getLiveRoomNumer($.getQueryVar('uid')));

@@ -122,7 +122,7 @@ function getComments(page) {
 		commentpage = 1;
 		page = 1;
 	}
-	url = 'https://api.bilibili.com/x/v2/reply?jsonp=jsonp&pn=' + page + '&type=1&sort=2&oid=' + getQueryVar('aid'); //630102970
+	url = 'https://api.bilibili.com/x/v2/reply?jsonp=jsonp&pn=' + page + '&type=1&sort=2&oid=' + $.getQueryVar('aid'); //630102970
 	//从网络获取信息
 	$.getJSON(url, function (result) {
 		if (result.data.replies) {
@@ -145,20 +145,9 @@ function getComments(page) {
 	});
 };
 
-//获取url传值
-function getQueryVar(variable) {
-	var query = window.location.search.substring(1);
-	var vars = query.split("&");
-	for (var i = 0; i < vars.length; i++) {
-		var pair = vars[i].split("=");
-		if (pair[0] == variable) { return pair[1]; }
-	}
-	return (false);
-}
-
 //加载视频信息
 function getInfo() {
-	var aid = getQueryVar('aid');
+	var aid = $.getQueryVar('aid');
 	$.getJSON('https://api.bilibili.com/x/web-interface/view?aid=' + aid, function (result) {
 		var title = result.data.title
 		var view = result.data.stat.view
@@ -222,7 +211,7 @@ function handleKeydown(e) {
 			} else {
 				//window.history.back(1);
 				//alert(window.location.search.substring(1));
-				window.location.href = '../index.html?ref=' + getQueryVar('ref')
+				window.location.href = '../index.html?ref=' + $.getQueryVar('ref')
 			}
 			break;
 		case 'Q':
@@ -491,6 +480,6 @@ document.activeElement.addEventListener('keydown', handleKeydown);
 
 /*  刚开应用该干啥  */
 //设置播放内容
-playV(getQueryVar('aid'), getQueryVar('cid'), getQueryVar('bvid'), '1');
+playV($.getQueryVar('aid'), $.getQueryVar('cid'), $.getQueryVar('bvid'), '1');
 getInfo();
 getIsLike()

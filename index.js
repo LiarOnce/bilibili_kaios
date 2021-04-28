@@ -44,18 +44,6 @@ function getById(id) {
 }
 
 var opened_VList = false;
-
-//获取url传值
-function getQueryVar(variable) {
-  var query = window.location.search.substring(1);
-  var vars = query.split("&");
-  for (var i = 0; i < vars.length; i++) {
-    var pair = vars[i].split("=");
-    if (pair[0] == variable) { return pair[1]; }
-  }
-  return (false);
-}
-
 //比较版本号
 function compareVer(oldver, newver) {
   var a = oldver.split('.');
@@ -257,39 +245,42 @@ function getZList() {
     return;
   }
   $('.items').append('正在加载…') //展示加载信息
-
-  var result = localStorage.getItem('live') //从本地获取信息 
   try {
-    var result = JSON.parse(result)
-  } catch (e) {
-    localStorage.setItem('live', "[]")
+    var url = 'https://api.live.bilibili.com/xlive/app-interface/v1/relation/liveAnchor?actionKey=appkey&device=android&qn=0&sortRule=0&filterRule=0';
+    var data = $.getApi(url, 'text');
+    $('.items').empty(); //清空列已有的列表
+    if (data != null && data.code == 0) {
+      var result = data.data.rooms;
+      if (result != null && result.length > 0) {
+        //建立列表
+        $.each(result, function (r, i) {
+          appendZ(i.uid, i.uname, i.title, i.cover, i.online, r + '');
+        })
+        var index = 0;
+        if (thisrefLiveIndex) {
+          index = thisrefLiveIndex;
+          thisrefLiveIndex = 0;
+        }
+        else if (lastliveIndex) {
+          index = lastliveIndex;
+        }
+        //对焦
+        if (document.querySelectorAll('.item')[index]) {
+          document.querySelectorAll('.item')[index].focus();
+        }
+        else {
+          if ($('.item').length > 0)
+            document.querySelectorAll('.item')[0].focus();
+        }
+      }
+      else {
+        $('.items').append('关注的UP没有一个在直播qaq~');
+      }
+    }
+  }
+  catch (e) {
+    console.log(e)
     getZList()
-  }
-
-  $('.items').empty() //清空列已有的列表
-
-  if (result.length == 0) {
-    $('.items').append('您还没有添加过直播哦<br>按“选项>添加”添加试试')
-    return
-  }
-  //建立列表
-  $.each(result, function (r, i) {
-    appendZ(i.uid, i.nick, i.title, i.pic, i.online, r + '');
-  })
-  var index = 0;
-  if (thisrefLiveIndex) {
-    index = thisrefLiveIndex;
-    thisrefLiveIndex = 0;
-  }
-  else if (lastliveIndex) {
-    index = lastliveIndex;
-  }
-  //对焦
-  if (document.querySelectorAll('.item')[index]) {
-    document.querySelectorAll('.item')[index].focus();
-  }
-  else {
-    document.querySelectorAll('.item')[0].focus();
   }
 };
 
@@ -1143,7 +1134,7 @@ thisOpenVlist = false;
 thisrefLiveIndex = 0;
 var lastSearchIndex = 0;
 function parseRef() {
-  thisRef = getQueryVar("ref")
+  thisRef = $.getQueryVar("ref")
   if (thisRef) {
     thisRef = JSON.parse(unescape(thisRef));
   }

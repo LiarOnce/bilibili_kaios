@@ -2,7 +2,7 @@ let userId = 0, page = 1;
 let self = false;
 
 $(function () {
-    var mid = getQueryVar('mid');
+    var mid = $.getQueryVar('mid');
     if (mid === false) {
         self = true;
         userId = $.getData('mid');
@@ -45,17 +45,6 @@ function loadResource() {
     }
 }
 
-//获取url传值
-function getQueryVar(variable) {
-    var query = window.location.search.substring(1);
-    var vars = query.split("&");
-    for (var i = 0; i < vars.length; i++) {
-        var pair = vars[i].split("=");
-        if (pair[0] == variable) { return pair[1]; }
-    }
-    return (false);
-}
-
 function handleKeydown(e) {
     switch (e.key) {
         case 'ArrowUp':
@@ -91,5 +80,7 @@ function nav(move) {
     if (targetElement) {
         current = next;
         targetElement.focus();
+        $('.item').removeClass('select');
+        $(targetElement).addClass('select');
     }
 }

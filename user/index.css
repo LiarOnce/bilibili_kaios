@@ -80,6 +80,7 @@ p {
   width: 98%;
   background: white;
   margin: 3px;
+  list-style: none;
 }
 
 .menuitem {
@@ -92,7 +93,21 @@ p {
   line-height: 30px;
 }
 
-.menuitem:focus {
+.menuitem.select {
   background-color: #00a1d6;
   color: white;
+}
+
+.item.select {
+  background-color: #00a1d6;
+  color: white;
+}
+
+p > input {
+  height: 24px;
+  line-height: 24px;
+}
+
+#face {
+  margin-top: 8px;
 }

@@ -1,10 +1,12 @@
 let userId = 0;
 let isOpen = false, self = false;
 $(function () {
-    var mid = getQueryVar('mid');
+    var mid = $.getQueryVar('mid');
+    console.log(mid)
     if (mid === false) {
         self = true;
         var id = $.getData('mid');
+        console.log(id)
         if (typeof id != 'undefined' && id != null && id != '') {
             userId = parseInt(id);
             setUserInfo();
@@ -128,6 +130,8 @@ function nav(move) {
         if (targetElement) {
             current = next;
             targetElement.focus();
+            $('.item').removeClass('select');
+            $(targetElement).addClass('select');
         }
     }
     else {
@@ -141,9 +145,10 @@ function nav(move) {
         }
         const targetElement = items[next];
         if (targetElement) {
-            console.log(targetElement)
             menuIndex = next;
             targetElement.focus();
+            $('.menuitem').removeClass('select');
+            $(targetElement).addClass('select');
         }
     }
 }
@@ -219,15 +224,4 @@ function encryptedPwd(pwd) {
         }
     }
     return encrypted;
-}
-
-//获取url传值
-function getQueryVar(variable) {
-    var query = window.location.search.substring(1);
-    var vars = query.split("&");
-    for (var i = 0; i < vars.length; i++) {
-        var pair = vars[i].split("=");
-        if (pair[0] == variable) { return pair[1]; }
-    }
-    return (false);
 }
