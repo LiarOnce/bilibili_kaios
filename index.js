@@ -214,6 +214,7 @@ function getAList() {
   }
 
   $('.items').empty() //清空列已有的列表 
+  $('.items').append('新版在菜单列表中选择用户可进行查看账号关注的UP主~');
   if (result.length == 0) {
     $('.items').append('您还没有添加过UP主哦<br>按“选项>添加”添加试试')
     return

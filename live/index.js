@@ -12,7 +12,6 @@ var thisRoomId = 0;
 //获取直播流媒体源,创建流式播放器（用的是flv.js的API）
 function makeLive(room_id) {
   thisRoomId = room_id;
-  $.listenLiveDanmaku(thisRoomId);
   //获取媒体源
   $.getJSON('https://api.live.bilibili.com/xlive/web-room/v2/index/getRoomPlayInfo?room_id=' + room_id +
     '&qn=80&platform=web&protocol=0,1&format=0,2&codec=0,1&ptype=8', function (result) {
@@ -22,7 +21,6 @@ function makeLive(room_id) {
         return;
       };
       if (result.data.playurl_info) {
-        console.log(result);
         //设置媒体源
         var data = result.data.playurl_info.playurl.stream[0].format[0].codec[0];
         var url = data.url_info[0].host + data.base_url + data.url_info[0].extra;
