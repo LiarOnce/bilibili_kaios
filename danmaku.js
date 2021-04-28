@@ -48,5 +48,31 @@ $.extend({
             console.log(e);
         }
         return json;
+    },
+    sendComment: function (aid, text) {
+        var json = null;
+        try {
+            var ts = $.getTs();
+            var access_token = this.getData('access_token');
+            var url = "https://api.bilibili.com/x/v2/reply/add";
+            var content = "access_key=" + access_token + "&appkey=" + android.key + "&platform=android&type=1&oid=" + aid + "&ts=" + ts + "&message=" + text;
+            content += "&sign=" + $.getSign(content);
+            $.ajax({
+                url: url,
+                data: content,
+                type: 'post',
+                async: false,
+                headers: {
+                    'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Mobile Safari/537.36'
+                },
+                success: function (data) {
+                    json = data;
+                }
+            });
+        }
+        catch (e) {
+            console.log(e);
+        }
+        return json;
     }
 });
