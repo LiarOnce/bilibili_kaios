@@ -3,6 +3,10 @@ const android = {
     key: '1d8b6e7d45233436',
     secret: '560c52ccd288fed045859ed18bffd973'
 };
+const web = {
+    key: '84956560bc028eb7',
+    secret: '94aba54af9065f71de72f5508f1cd42e'
+};
 const tv = {
     key: '4409e2ce8ffd12b8',
     secret: '59b43e04ad6965f34319062b478f83dd'

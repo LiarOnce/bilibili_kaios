@@ -17,38 +17,17 @@ var menulive = ['用户', '添加直播间', '添加直播用户', '删除', '�
 $.ajaxSettings.xhr = function () {
   try {
     var xhr = new XMLHttpRequest({ mozSystem: true });
-    // xhr.fakesend = xhr.send; 
-    // xhr.send = function () {  
-    //    try {  
-    //        this.setRequestHeader("Cookie", "aaa");  
-    //        this.fakesend();
-    //    } catch (err) {
-    //        alert(err);
-    //    }
-    // }; 
     return xhr;
   } catch (e) { console.log(e); }
 };
-
-// $.ajax({
-//   async: true,
-//   type: "GET",
-//   url: setCookieUrl,
-//   success: function (result) { 
-//       //alert(result); 
-//   }
-// }); 
-
 function getById(id) {
   return document.getElementById(id);
 }
-
 var opened_VList = false;
 //比较版本号
 function compareVer(oldver, newver) {
   var a = oldver.split('.');
   var b = newver.split('.');
-
   for (var i = 0; i < a.length; i++) {
     var aa = parseInt(a[i]);
     var bb = parseInt(b[i]);
@@ -64,7 +43,6 @@ function compareVer(oldver, newver) {
   }
   return false;
 }
-
 function appendV(item, tabIndex) {
   $('.items').append("<div class='item' tabIndex='" + tabIndex + "' data-aid='" + item.aid + "' data-bvid='" + item.bvid + "' data-title='" + item.title + "' data-cid='" + item.cid + "'><img class='cover' src='" + item.pic + "@96w_60h.jpg" + "'/><div class='title'>" + item.title + "</div><div class='imgUP'>UP</div><div class='author'>" + item.author + "</div></div>")
 }
@@ -77,7 +55,6 @@ function appendA(uid, nick, sub, image, tabIndex) {
 function appendZ(uid, nick, title, image, sub, tabIndex) {
   $('.items').append("<div class='item' tabIndex='" + tabIndex + "' data-uid='" + uid + "' data-title='" + title + "'><img class='head2' src='" + image + "@100w_60h.jpg" + "'/><div class='title' style='left: 110px'>" + title + "</div><div class='author' style='left: 110px'>在线：" + sub + "</div></div>")
 }
-
 //打开视频
 function openV() {
   var currentIndex = document.activeElement.tabIndex;
@@ -120,13 +97,10 @@ function softkey(left, center, right) {
   $('#softkey-right').text(right);
 }
 /*  获取信息  */
-
 //dict：方法（遍历时用于解析的列表：【标题，作者，配图，视频AV号，视频BV号】）（以item开头）
 //each：遍历的位置（以result开头）
-
 //获取视频列表
 function getVList(error, data) {
-
   if (error) {
     alert(error);
   } else {
@@ -154,12 +128,8 @@ function getVList(error, data) {
     }
   }
 };
-
-
 //获取视频列表
 function getVList2(error, data) {
-
-
   if (error) {
     alert(error);
   } else {
@@ -168,34 +138,26 @@ function getVList2(error, data) {
       return;
     }
     $('.items').empty() //清空列已有的列表
-
     $.each(data.data.list.vlist, function (r, item) {
       if (item.pic.substr(0, 2) == '//') {
         item.pic = 'http:' + item.pic;
       }
       appendV(item, r + '');
-    })
-
-
+    });
     if (thisOpenVlist == true || lastOpened_VList) {
       //对焦  
       if (document.querySelectorAll('.item')[thisRef.tabIndex]) {
-
         document.querySelectorAll('.item')[thisRef.tabIndex].focus();
       }
     }
     else {
       //对焦 
       if (document.querySelectorAll('.item')[0]) {
-
         document.querySelectorAll('.item')[0].focus();
       }
     }
-
   }
 };
-
-
 //获取作者列表
 function getAList() {
   $('.items').empty() //清空列已有的列表
@@ -204,7 +166,6 @@ function getAList() {
     return;
   }
   $('.items').append('正在加载…') //展示加载信息
-
   var result = localStorage.getItem('like') //从本地获取信息 
   try {
     var result = JSON.parse(result)
@@ -212,7 +173,6 @@ function getAList() {
     localStorage.setItem('like', "[]")
     getAList()
   }
-
   $('.items').empty() //清空列已有的列表 
   $('.items').append('<p style="color:red;">新版在菜单列表中选择用户可进行查看账号关注的UP主~</p>');
   if (result.length == 0) {
@@ -226,7 +186,6 @@ function getAList() {
   try {
     //对焦 
     if (document.querySelectorAll('.item')[lastLikeIndex]) {
-
       document.querySelectorAll('.item')[lastLikeIndex].focus();
     }
     else {
@@ -235,9 +194,7 @@ function getAList() {
   } catch (err) {
     console.log(errr);
   }
-
 };
-
 //获取直播列表
 function getZList() {
   $('.items').empty() //清空列已有的列表
@@ -284,7 +241,6 @@ function getZList() {
     getZList()
   }
 };
-
 function check_update(pack_name, version) {
   if ($.cookie('update_checked') == true) {
     return;
@@ -294,14 +250,11 @@ function check_update(pack_name, version) {
     if (compareVer(version, latest_version)) {
       if (confirm('【检测到新版本】\n版本号：' + latest_version + '\n是否下载新版本？')) {
         window.open(result.downloadUrl)
-      } else {
       }
     }
     $.cookie('update_checked', true)
   })
 }
-
-
 /*  D-Pad  */
 //设置按键函数
 function handleKeydown(e) {
@@ -329,15 +282,29 @@ function handleKeydown(e) {
         showhideMenu();
         return;
       }
-      if (opened_VList) {
-        load()
-      } else {
-        window.close()
-      }
+      if (opened_VList)
+        load();
+      else
+        window.close();
       break;
     case 'Q':
     case 'SoftLeft':
-      refresh();
+      if (tab_location != 4)
+        refresh();
+      else {
+        var item = $('.item.select').attr('tabIndex');
+        item = parseInt(item);
+        switch (item) {
+          case 0: {
+            window.location.href = './bangmi/index.html?type=0';
+            break;
+          }
+          case 1: {
+            window.location.href = './bangmi/index.html?type=1';
+            break;
+          }
+        }
+      }
       break;
     case 'E':
     case 'SoftRight':
@@ -355,22 +322,6 @@ function handleKeydown(e) {
     case '#':
       alert('By：白羊座的一只狼  修改 by zixing\n使用说明：\n1.此界面按0初始化\n2.播放界面按2增加音量\n3.播放界面按8降低音量');
       break;
-      // case '9':  //测试代码
-      //     $.ajax({
-      //         async: false,
-      //         type: "GET",
-      //         url: roominfourl + "123123",
-      //         success: function (result) {
-      //             alert(JSON.stringify(result)); 
-      //         }, error: function (result) {
-
-      //             alert(JSON.stringify(result)); 
-      //         }, 
-      //         headers: { 
-      //            "Cookie": "bsource=search_baidu"
-      //         }
-      //     });  
-      break
   }
 }
 //设置导航键函数
@@ -391,17 +342,20 @@ function nav(move) {
     if (targetElement) {
       targetElement.focus();
     }
-    return;
   }
-  var currentIndex = document.activeElement.tabIndex;
-  var next = currentIndex + move;
-  var items = document.querySelectorAll('.item');
-  var targetElement = items[next];
-  if (targetElement) {
-    targetElement.focus();
-  }
-  if (next == 0) {
-    $('.items').scrollTop(0);
+  else {
+    var currentIndex = document.activeElement.tabIndex;
+    var next = currentIndex + move;
+    var items = document.querySelectorAll('.item');
+    var targetElement = items[next];
+    if (targetElement) {
+      $('.item').removeClass('select');
+      $(targetElement).addClass('select');
+      targetElement.focus();
+    }
+    if (next == 0) {
+      $('.items').scrollTop(0);
+    }
   }
 }
 var day = 3;
@@ -410,7 +364,6 @@ function tab(move) {
     return;
   }
   var currentIndex = parseInt($('.focus').attr('tabIndex')); //获取目前带有focus的元素的tabIndex
-
   if (currentIndex === 2) {
     lastLikeIndex = document.activeElement.tabIndex;
     lastOpened_VList = opened_VList;
@@ -422,15 +375,16 @@ function tab(move) {
   else if (currentIndex === 3) {
     lastliveIndex = document.activeElement.tabIndex;
   }
-
+  else if (currentIndex === 4) {
+    lastmoreIndex = document.activeElement.tabIndex;
+  }
   var next = currentIndex + move; //设置移动位置
-  if (next > 3) {
+  if (next > 4) {
     next = 0;
   }
   if (next < 0) {
-    next = 3;
+    next = 4;
   }
-
   var items = document.querySelectorAll('li'); //遍历所有的li元素
   var targetElement = items[next]; //将位置与遍历结果对应
   if (targetElement == undefined) { //如果没有可供选择的目标
@@ -449,14 +403,12 @@ function load() {
       ajax.abort();
     }
   } catch (e) { }
-
   var items = document.querySelectorAll('li'); //遍历所有的li元素
   var targetElement = items[tab_location]; //将位置与遍历结果对应
   if (targetElement != undefined) { //如果没有可供选择的目标
     $('.focus').attr("class", ""); //清除原有效果
     targetElement.className = "focus"; //设置新效果 
   }
-
   switch (tab_location) {
     case 0: //搜索 
       if (thisRef.searchdata) { //跳转的搜索数据 
@@ -467,8 +419,6 @@ function load() {
       softkey('搜索', '播放', '下一页');
       break;
     case 1: //首页推荐
-
-
       $('.items').empty() //清空列已有的列表
       if (navigator.onLine == false) {
         $('.items').append('请连接互联网！');
@@ -514,9 +464,14 @@ function load() {
       getZList();
       softkey('刷新', '观看', '选项');
       break;
+    case 4: {
+      $('.items').empty();
+      $('.items').append('<div tabIndex="0" class="item small">番剧</div><div tabIndex="1" class="item small">国创</div>');
+      softkey('选择', '', '选项');
+      break;
+    }
   }
 }
-
 function add() {
   switch (tab_location) {
     case 2: //关注
@@ -570,7 +525,6 @@ function addByUserId() {
     alert('请输入数字！')
     return;
   }
-
   var data = localStorage.getItem('live'); //读取数据
   data = JSON.parse(data); //将字符串转换为JSON
   $.ajax({
@@ -743,7 +697,6 @@ function refresh(ignoremenu) {
       selectMenu();
       return;
     }
-
     switch (tab_location) {
       case 1:
         lastHotIndex = 0;
@@ -754,14 +707,13 @@ function refresh(ignoremenu) {
           nowpage = 1;
           nowuserid = "";
         }
+        break;
       case 0:
         searchdata = "";
         searchPage = 1;
-        break
-
+        break;
     }
   }
-
   switch (tab_location) {
     case 0: //搜索
       searchPage = 1;
@@ -807,8 +759,8 @@ var lastLikeIndex = 0;
 var lastOpened_VList = false;
 //最后查看的热门视频
 var lastHotIndex = 0;
-
 var lastliveIndex = 0;
+var lastmoreIndex = 0;
 
 function enter() {
   if (isshowmenu) {
@@ -879,7 +831,6 @@ function enter() {
       break;
   }
 }
-
 var isshowmenu = 0;
 var lastl = "";
 var lastm = "";
@@ -891,16 +842,13 @@ function setLastindex() {
     lastindex = 0;
   }
 }
-
 function showhideMenu(menu) {
-
   if (isshowmenu === 0) {
     setLastindex();
     getById("menu").style.display = "block";
     lastl = $('#softkey-left').text();
     lastm = $('#softkey-center').text();
     lastr = $('#softkey-right').text();
-
     var str = "";
     for (var i = 0; i < menu.length; i++) {
       str += '<li class="menuitem" tabIndex="' + i + '">' + menu[i] + '</li>';
@@ -927,7 +875,6 @@ function showhideMenu(menu) {
     }
   }
 }
-
 function ClearLike() {
   if (confirm('确定清空所有关注吗？')) {
     var result = result = [];
@@ -936,7 +883,6 @@ function ClearLike() {
     load();
   }
 }
-
 function ClearLive() {
   if (confirm('确定清空所有直播吗？')) {
     var result = result = [];
@@ -945,7 +891,6 @@ function ClearLive() {
     load();
   }
 }
-
 //取消关注用户
 function UnLikeUser() {
   var item = $(document.querySelectorAll('.item')[lastindex]);
@@ -972,7 +917,6 @@ function UnLikeUser() {
     }
   }
 }
-
 //取消关注直播
 function UnLikeLive() {
   var item = $(document.querySelectorAll('.item')[lastindex]);
@@ -999,7 +943,6 @@ function UnLikeLive() {
     }
   }
 }
-
 function selectMenu() {
   var index = document.activeElement.tabIndex;
   var items = document.querySelectorAll('.menuitem');
@@ -1045,11 +988,9 @@ function selectMenu() {
     tab_location
   }
 }
-
 function LoginPage() {
   window.location.href = './user/index.html';
 }
-
 function SoftRight() {
   switch (tab_location) {
     case 0: //搜索
@@ -1159,9 +1100,6 @@ function parseRef() {
   thisOpenVlist = thisRef.opened_VList;
   thisrefLiveIndex = thisRef.tabIndex;
   lastSearchIndex = thisRef.tabIndex;
-  //document.activeElement.tabIndex = ref.tabIndex;
-  //opened_VList = thisRef.opened_VList;
-  //nowuserid = thisRef.nowuserid;
 }
 //检查更新
 //check_update('app://kai.baiyang.bilibili', '1.6')  
