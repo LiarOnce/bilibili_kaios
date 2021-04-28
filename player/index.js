@@ -5,7 +5,7 @@
 //https://interface.bilibili.com/v2/playurl?appkey=iVGUTjsxvpLeuDCf&cid=224524113&otype=json&qn=16&quality=16&type=&sign=a549b4a46cbb3b8d8b0d89f295220f15
 
 //评论第几页
-var commentpage = 1;
+var commentpage = 1, islike = 0;
 /*  通用函数  */
 //跨域设置
 $.ajaxSettings.xhr = function () {
@@ -68,8 +68,7 @@ function playV(aid, cid, bvid, page) {
 	{ 
 		alert("解析视频源失败！");
 		return;
-	}
-   
+	}   
 	//对焦
 	if(document.querySelectorAll('.itemcomment')[0])
 	{ 
@@ -78,10 +77,7 @@ function playV(aid, cid, bvid, page) {
   }).fail(function(jqXHR, status, error){
   alert(error+",请求可能被拦截"); });
   */
-
 	//$('.video_normal').attr('src','https://player.bilibili.com/player.html?t=0.05&aid=' + aid + '&bvid=' + bvid + '&page=' + page + '&danmaku=0')
-
-
 }
 function add0(m) { return m < 10 ? '0' + m : m }
 function formattime(ts) {
@@ -94,28 +90,18 @@ function formattime(ts) {
 	var s = time.getSeconds();
 	return y + '-' + add0(m) + '-' + add0(d) + ' ' + add0(h) + ':' + add0(mm) + ':' + add0(s);
 }
-
-
 var username = "UP主";
 var uid = 0;
 /*  获取信息  */
-
 function appendComments(item, tabIndex) {
 	var content = item.content.message;   //评论内容
 	var uname = item.member.uname; //用户名
 	var avatar = item.member.avatar + '@40w_40h.jpg'; //头像 
 	var ctime = formattime(item.ctime); //评论时间
-
-
 	$('.items').append('<div class="itemcomment" tabIndex="' + tabIndex + '"><div class="commenthead"> <div class="left_img"> <div class="head"> <img src="' + avatar + '"alt=""></div></div><div class="user-info"><p>' + uname + '</p><span>' + ctime + '</span></div> </div> <div class="comment"> <p>' + content + '</p></div></div>')
 }
-
-
 function getComments(page) {
-
-	if (page) {
-
-	}
+	if (page) { }
 	else {
 		$('.items').empty() //清空列已有的列表
 		$('.items').append('正在加载…') //展示加载信息
@@ -296,22 +282,38 @@ function UnLikeUser(uid) {
 }
 
 function SoftRight() {
-	if ($('#softkey-right').text() === '加载中' || $('#player').attr('class') == 'video_fullscreen') {
-		return;
-	}
-	var islike = $('#softkey-right').text() === '取消关注';
-	if (islike) {
-		//取消关注
-		if (confirm('确定取消关注"' + username + '"吗？')) {
-			UnLikeUser(uid);
-			$('#softkey-right').text('关注');
+	if (tab_location == 0) {
+		if ($('#softkey-right').text() === '加载中' || $('#player').attr('class') == 'video_fullscreen') {
+			return;
+		}
+		var islike = $('#softkey-right').text() === '取消关注';
+		if (islike) {
+			//取消关注
+			if (confirm('确定取消关注"' + username + '"吗？')) {
+				UnLikeUser(uid);
+				$('#softkey-right').text('关注');
+			}
+		}
+		else {
+			//关注
+			if (confirm('确定关注"' + username + '"吗？')) {
+				LikeUser(uid);
+				$('#softkey-right').text('取消关注');
+			}
 		}
 	}
-	else {
-		//关注
-		if (confirm('确定关注"' + username + '"吗？')) {
-			LikeUser(uid);
-			$('#softkey-right').text('取消关注');
+	else if (tab_location == 1) {
+		var text = prompt("请输入您的评论", "");
+		if (text != '') {
+			var aid = $.getQueryVar('aid');
+			var result = $.sendComment(aid, text);
+			try {
+				if (result.success_action == 0)
+					alert(result.success_toast);
+			}
+			catch (e) {
+				alert('发送失败！');
+			}
 		}
 	}
 }
@@ -329,7 +331,6 @@ function nav(move) {
 		else if (next < 0) {
 			next = 0;
 		}
-
 		const targetElement = items[next];
 		if (targetElement) {
 			targetElement.focus();
@@ -342,7 +343,6 @@ function nav(move) {
 		} else {
 			var video = document.getElementById("player");
 			if (video.paused == true) {
-
 				$('#softkey-center').text('播放');
 			} else {
 
@@ -361,7 +361,6 @@ function nav(move) {
 		else if (next < 0) {
 			next = 0;
 		}
-
 		const targetElement = items[next];
 		if (targetElement) {
 			targetElement.focus();
@@ -391,9 +390,15 @@ function tab(move) {
 	tab_location = next;
 	if (tab_location == 0) {
 		$('#softkey-left').text('全屏');
+		if (islike) {
+			$('#softkey-right').text("取消关注");
+		} else {
+			$('#softkey-right').text("关注");
+		}
 	}
 	else if (tab_location == 1) {
 		$('#softkey-left').text('下一页');
+		$('#softkey-right').text('发表评论');
 	}
 	load()
 }
@@ -461,7 +466,7 @@ function getIsLike(uid) {
 		$('#softkey-right').text("关注");
 		return;
 	}
-	var islike = 0;
+	islike = 0;
 	for (var i = 0; i < result.length; i++) {
 		if (result[i].uid === uid) {
 			islike = 1;

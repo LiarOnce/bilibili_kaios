@@ -12,7 +12,6 @@ var thisRoomId = 0;
 //获取直播流媒体源,创建流式播放器（用的是flv.js的API）
 function makeLive(room_id) {
   thisRoomId = room_id;
-  $.listenLiveDanmaku(thisRoomId);
   //获取媒体源
   $.getJSON('https://api.live.bilibili.com/xlive/web-room/v2/index/getRoomPlayInfo?room_id=' + room_id +
     '&qn=80&platform=web&protocol=0,1&format=0,2&codec=0,1&ptype=8', function (result) {
@@ -22,12 +21,10 @@ function makeLive(room_id) {
         return;
       };
       if (result.data.playurl_info) {
-        console.log(result);
         //设置媒体源
         var data = result.data.playurl_info.playurl.stream[0].format[0].codec[0];
         var url = data.url_info[0].host + data.base_url + data.url_info[0].extra;
         try {
-          console.log(url)
           //创建播放器
           player = flvjs.createPlayer({
             type: 'flv',
@@ -79,9 +76,11 @@ function tab(move) {
   tab_location = next;
   if (tab_location == 0) {
     $('#softkey-left').text('全屏');
+    $('#softkey-right').text('重新加载');
   }
   else if (tab_location == 1) {
     $('#softkey-left').text('刷新弹幕');
+    $('#softkey-right').text('发送弹幕');
   }
   load();
 }
@@ -97,7 +96,6 @@ function appendComments(item, tabIndex) {
 
 
 function getComments(page) {
-
   if (page) {
 
   }
@@ -120,7 +118,6 @@ function getComments(page) {
       alert("没有获取到更多弹幕！");
       return;
     }
-
     //对焦
     if (document.querySelectorAll('.itemcomment')[0]) {
       document.querySelectorAll('.itemcomment')[0].focus()
@@ -290,11 +287,21 @@ function handleKeydown(e) {
       } else if (tab_location === 1) {
         getComments();
       }
-
       break;
     case 'E':
     case 'SoftRight': //重新加载
-      location.reload();
+      if (tab_location === 0) {
+        location.reload();
+      }
+      else {
+        var text = prompt("请输入弹幕内容", "");
+        if (text != '') {
+          var result = $.sendLiveDanmaku(thisRoomId, text);
+          if (result.code != 0) {
+            alert('发送弹幕失败！' + result.message);
+          }
+        }
+      }
       break;
     case '2':
       navigator.volumeManager.requestUp();

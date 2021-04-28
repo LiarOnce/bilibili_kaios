@@ -49,25 +49,30 @@ $.extend({
         }
         return json;
     },
-    listenLiveDanmaku: function (rid) {
-        $.ajax({
-            url: 'https://api.live.bilibili.com/room/v1/Danmu/getConf?room_id=' + rid,
-            type: 'get',
-            async: false,
-            headers: {
-                'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Mobile Safari/537.36'
-            },
-            success: function (result) {
-                var servers = [];
-                if (result.code == 0)
-                    servers = result.data.server_list;
-                if (servers.length == 0)
-                    servers = [{ 'host': 'livecmt-2.bilibili.com', 'port': 2243 },
-                    { 'host': 'livecmt-1.bilibili.com', 'port': 2243 }];
-                var index = Math.floor(Math.random() * servers.length);
-                var address = 'ws://' + servers[index].host + ':' + servers[index].port + '/sub';
-                new liveDanmaku(rid, address);
-            }
-        });
+    sendComment: function (aid, text) {
+        var json = null;
+        try {
+            var ts = $.getTs();
+            var access_token = this.getData('access_token');
+            var url = "https://api.bilibili.com/x/v2/reply/add";
+            var content = "access_key=" + access_token + "&appkey=" + android.key + "&platform=android&type=1&oid=" + aid + "&ts=" + ts + "&message=" + text;
+            content += "&sign=" + $.getSign(content);
+            $.ajax({
+                url: url,
+                data: content,
+                type: 'post',
+                async: false,
+                headers: {
+                    'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Mobile Safari/537.36'
+                },
+                success: function (data) {
+                    json = data;
+                }
+            });
+        }
+        catch (e) {
+            console.log(e);
+        }
+        return json;
     }
 });
