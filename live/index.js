@@ -13,42 +13,37 @@ var thisRoomId = 0;
 function makeLive(room_id) {
   thisRoomId = room_id;
   //获取媒体源
-  $.getJSON('https://api.live.bilibili.com/xlive/web-room/v2/index/getRoomPlayInfo?room_id=' + room_id + '&no_playurl=0&mask=0&qn=80&platform=web&protocol=0,1&format=0,2&codec=0,1', function (result) {
-    //错误返回
-    if (result.code != 0) {
-      console.log(result.code);
-      return;
-    };
-    if (result.data.playurl_info) {
-      //设置媒体源
-      var data = result.data.playurl_info.playurl.stream[0].format[0].codec[0];
-      var url = data.url_info[0].host + data.base_url + data.url_info[0].extra;
-      //console.log(url); 
-
-      //创建播放器
-      player = flvjs.createPlayer({
-        type: 'flv',
-        url: url
-      });
-      player.attachMediaElement(document.getElementById('player'));
-      player.load()
-      player.play()
-    }
-    else {
-      alert("直播不在进行中！");
-    }
-  })
-}
-
-//获取url传值
-function getQueryVar(variable) {
-  var query = window.location.search.substring(1);
-  var vars = query.split("&");
-  for (var i = 0; i < vars.length; i++) {
-    var pair = vars[i].split("=");
-    if (pair[0] == variable) { return pair[1]; }
-  }
-  return (false);
+  $.getJSON('https://api.live.bilibili.com/xlive/web-room/v2/index/getRoomPlayInfo?room_id=' + room_id +
+    '&qn=80&platform=web&protocol=0,1&format=0,2&codec=0,1&ptype=8', function (result) {
+      //错误返回
+      if (result.code != 0) {
+        alert('获取直播地址失败！');
+        return;
+      };
+      if (result.data.playurl_info) {
+        //设置媒体源
+        var data = result.data.playurl_info.playurl.stream[0].format[0].codec[0];
+        var url = data.url_info[0].host + data.base_url + data.url_info[0].extra;
+        try {
+          //创建播放器
+          player = flvjs.createPlayer({
+            type: 'flv',
+            isLive: true,
+            url: url
+          });
+          player.attachMediaElement(document.getElementById('player'));
+          player.load();
+          player.play();
+        }
+        catch (e) {
+          console.log(e);
+          alert('初始化播放器失败！');
+        }
+      }
+      else {
+        alert("直播不在进行中！");
+      }
+    })
 }
 
 function setData(name, sign, title) {
@@ -81,9 +76,11 @@ function tab(move) {
   tab_location = next;
   if (tab_location == 0) {
     $('#softkey-left').text('全屏');
+    $('#softkey-right').text('重新加载');
   }
   else if (tab_location == 1) {
     $('#softkey-left').text('刷新弹幕');
+    $('#softkey-right').text('发送弹幕');
   }
   load();
 }
@@ -99,7 +96,6 @@ function appendComments(item, tabIndex) {
 
 
 function getComments(page) {
-
   if (page) {
 
   }
@@ -122,7 +118,6 @@ function getComments(page) {
       alert("没有获取到更多弹幕！");
       return;
     }
-
     //对焦
     if (document.querySelectorAll('.itemcomment')[0]) {
       document.querySelectorAll('.itemcomment')[0].focus()
@@ -136,7 +131,7 @@ function getComments(page) {
 function load() {
   switch (tab_location) {
     case 0: //简介
-      getLiveRoomNumer(getQueryVar('uid'))
+      getLiveRoomNumer($.getQueryVar('uid'))
       var video = document.getElementById("player");
       if (video.paused == true) {
 
@@ -278,7 +273,7 @@ function handleKeydown(e) {
       break;
     case 'Backspace':
       //window.history.back(1);
-      window.location.href = '../index.html?ref=' + getQueryVar('ref')
+      window.location.href = '../index.html?ref=' + $.getQueryVar('ref')
       break;
     case 'Q':
     case 'SoftLeft':
@@ -292,11 +287,21 @@ function handleKeydown(e) {
       } else if (tab_location === 1) {
         getComments();
       }
-
       break;
     case 'E':
     case 'SoftRight': //重新加载
-      location.reload();
+      if (tab_location === 0) {
+        location.reload();
+      }
+      else {
+        var text = prompt("请输入弹幕内容", "");
+        if (text != '') {
+          var result = $.sendLiveDanmaku(thisRoomId, text);
+          if (result.code != 0) {
+            alert('发送弹幕失败！' + result.message);
+          }
+        }
+      }
       break;
     case '2':
       navigator.volumeManager.requestUp();
@@ -312,4 +317,4 @@ document.activeElement.addEventListener('keydown', handleKeydown);
 
 /* 启动后行为 */
 ;
-makeLive(getLiveRoomNumer(getQueryVar('uid')));
+makeLive(getLiveRoomNumer($.getQueryVar('uid')));

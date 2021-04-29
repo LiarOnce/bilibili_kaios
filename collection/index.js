@@ -1,6 +1,7 @@
 let page = 1;
 let userId = 0;
 let isOpen = false;
+let fid = 0;
 
 $(function () {
     userId = $.getData('mid');
@@ -12,7 +13,8 @@ $(function () {
             var item = arr[index];
             options += '<li class="menuitem" value="' + item.fid + '">' + item.title + '</li>';
         }
-        loadBox(arr[0].fid);
+        fid = arr[0].fid;
+        loadBox();
         $('#menucontainer').append(options);
     }
     else {
@@ -34,8 +36,9 @@ function handleKeydown(e) {
             if (isOpen) {
                 const item = document.querySelectorAll('.menuitem')[menu];
                 if (typeof item != 'undefined') {
-                    var fid = $(item).attr('value');
-                    loadBox(fid);
+                    page = 1;
+                    fid = $(item).attr('value');
+                    loadBox();
                 }
             }
             else {
@@ -45,11 +48,14 @@ function handleKeydown(e) {
                     window.location.href = '../player/index.html?aid=' + aid + '&cid=' + cid;
                 }
             }
+            showhideMenu();
             break;
         case 'Enter':
         case 'Backspace':
-            if (!isOpen)
-                window.location.href = '../user/index.html';
+            if (!isOpen) {
+                page++;
+                loadBox();
+            }
             break;
         case 'E':
         case 'SoftRight':
@@ -58,14 +64,20 @@ function handleKeydown(e) {
     }
 }
 
-function loadBox(fid) {
+function loadBox() {
     var url = 'http://api.bilibili.com/x/v2/fav/video?pn=' + page + '&ps=20&tid=0&fid=' + fid + '&vmid=' + userId + '&order=ftime';
     var result = $.getApi(url);
+    if (page == 1)
+        $('#container').empty();
     if (result.code == 0) {
         var arr = result.data.archives;
         for (var index = 0; index < arr.length; index++) {
             var item = arr[index];
-            $('#container').append("<div class='item' data-aid='" + item.aid + "' data-title='" + item.title + "' data-cid='" + item.cid + "'><img class='cover' src='" + item.pic + "@96w_60h.jpg" + "'/><div class='title'>" + item.title + "</div><div class='imgUP'>UP</div><div class='author'>" + item.author + "</div></div>")
+            var name = '';
+            if (item.owner != null)
+                name = item.owner.name;
+            $('#container').append("<div class='item' data-aid='" + item.aid + "' data-title='" + item.title + "' data-cid='" + item.cid + "'><img class='cover' src='" +
+                item.pic + "@96w_60h.jpg" + "'/><div class='title'>" + item.title + "</div><div class='imgUP'>UP</div><div class='author'>" + name + "</div></div>");
         }
     }
     else {
@@ -109,6 +121,8 @@ function nav(move) {
         if (targetElement) {
             current = next;
             targetElement.focus();
+            $('.item').removeClass('select');
+            $(targetElement).addClass('select');
         }
     }
     else {
@@ -124,6 +138,8 @@ function nav(move) {
         if (targetElement) {
             menu = next;
             targetElement.focus();
+            $('.menuitem').removeClass('select');
+            $(targetElement).addClass('select');
         }
 
     }

@@ -1,11 +1,5 @@
-
-
-//appkey = iVGUTjsxvpLeuDCf
-//sec = aHRmhWMLkdeMuILqORnYZocwMBpMEOdt
-//https://interface.bilibili.com/v2/playurl?appkey=iVGUTjsxvpLeuDCf&cid=224524113&otype=json&qn=16&quality=16&type=&sign=a549b4a46cbb3b8d8b0d89f295220f15
-
 //评论第几页
-var commentpage = 1;
+var commentpage = 1, islike = 0;
 /*  通用函数  */
 //跨域设置
 $.ajaxSettings.xhr = function () {
@@ -13,9 +7,7 @@ $.ajaxSettings.xhr = function () {
 		return new XMLHttpRequest({ mozSystem: true });
 	} catch (e) { }
 };
-
-parseUrl = 'https://api.bilibili.com/x/player/playurl?&qn=32&fnval=0&fnver=0&fourk=0' //bvid=BV18t4y1r7yp&cid=277711864
-
+parseUrl = 'https://api.bilibili.com/x/player/playurl?&qn=32&fnval=0&fnver=0&fourk=0'
 //打开视频
 function openV() {
 	const currentIndex = document.activeElement.tabIndex;
@@ -42,46 +34,49 @@ function playV(aid, cid, bvid, page) {
 					player.play();
 				}
 				else {
-					alert("视频直链解析失败！");
+					getPlayUrl();
 				}
 			} catch (err) {
-				alert("视频直链解析失败 " + err);
+				getPlayUrl();
 			}
 		},
 		error: function (result) {
-			alert(JSON.stringify(result));
+			console.log(result)
+			getPlayUrl();
 		},
 		headers: {
 			'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Mobile Safari/537.36'
 		}
 	});
-	/*
-	$.getJSON(url,function(result) { 
-	if(result.data.durl && result.data.durl[0].url)
-	{ 
-		var videourl = result.data.durl[0].url;
-		var player = document.getElementById("player");
-		player.src = videourl;
-		player.play();
+}
+function getPlayUrl() {
+	var result = false;
+	try {
+		var cid = $.getQueryVar('cid');
+		var season_type = $.getQueryVar('season_type');
+		var url = 'https://bangumi.bilibili.com/player/web_api/v2/playurl?cid=' + cid + '&otype=json&type=&quality=16&module=bangumi&season_type=' + season_type + '&qn=16';
+		var result = $.getApi(url, web);
+		if (result.result == 'suee') {
+			if (result.durl != null && result.durl.length > 0) {
+				var url = result.durl[0].url;
+				var player = document.getElementById("player");
+				player.src = url;
+				player.width = 240;
+				player.height = 150;
+				player.play();
+				result = true;
+			}
+		}
+		else {
+			console.log(result);
+			alert("视频直链解析失败！");
+		}
 	}
-	else
-	{ 
-		alert("解析视频源失败！");
-		return;
+	catch (e) {
+		console.log(e);
+		alert("视频直链解析失败！");
 	}
-   
-	//对焦
-	if(document.querySelectorAll('.itemcomment')[0])
-	{ 
-		document.querySelectorAll('.itemcomment')[0].focus()
-	}
-  }).fail(function(jqXHR, status, error){
-  alert(error+",请求可能被拦截"); });
-  */
-
-	//$('.video_normal').attr('src','https://player.bilibili.com/player.html?t=0.05&aid=' + aid + '&bvid=' + bvid + '&page=' + page + '&danmaku=0')
-
-
+	return result;
 }
 function add0(m) { return m < 10 ? '0' + m : m }
 function formattime(ts) {
@@ -94,35 +89,25 @@ function formattime(ts) {
 	var s = time.getSeconds();
 	return y + '-' + add0(m) + '-' + add0(d) + ' ' + add0(h) + ':' + add0(mm) + ':' + add0(s);
 }
-
-
 var username = "UP主";
 var uid = 0;
 /*  获取信息  */
-
 function appendComments(item, tabIndex) {
 	var content = item.content.message;   //评论内容
 	var uname = item.member.uname; //用户名
 	var avatar = item.member.avatar + '@40w_40h.jpg'; //头像 
 	var ctime = formattime(item.ctime); //评论时间
-
-
 	$('.items').append('<div class="itemcomment" tabIndex="' + tabIndex + '"><div class="commenthead"> <div class="left_img"> <div class="head"> <img src="' + avatar + '"alt=""></div></div><div class="user-info"><p>' + uname + '</p><span>' + ctime + '</span></div> </div> <div class="comment"> <p>' + content + '</p></div></div>')
 }
-
-
 function getComments(page) {
-
-	if (page) {
-
-	}
+	if (page) { }
 	else {
 		$('.items').empty() //清空列已有的列表
 		$('.items').append('正在加载…') //展示加载信息
 		commentpage = 1;
 		page = 1;
 	}
-	url = 'https://api.bilibili.com/x/v2/reply?jsonp=jsonp&pn=' + page + '&type=1&sort=2&oid=' + getQueryVar('aid'); //630102970
+	url = 'https://api.bilibili.com/x/v2/reply?jsonp=jsonp&pn=' + page + '&type=1&sort=2&oid=' + $.getQueryVar('aid'); //630102970
 	//从网络获取信息
 	$.getJSON(url, function (result) {
 		if (result.data.replies) {
@@ -135,7 +120,6 @@ function getComments(page) {
 			alert("没有更多评论了！");
 			return;
 		}
-
 		//对焦
 		if (document.querySelectorAll('.itemcomment')[0]) {
 			document.querySelectorAll('.itemcomment')[0].focus()
@@ -144,44 +128,29 @@ function getComments(page) {
 		alert(error + ",请求可能被拦截");
 	});
 };
-
-//获取url传值
-function getQueryVar(variable) {
-	var query = window.location.search.substring(1);
-	var vars = query.split("&");
-	for (var i = 0; i < vars.length; i++) {
-		var pair = vars[i].split("=");
-		if (pair[0] == variable) { return pair[1]; }
-	}
-	return (false);
-}
-
 //加载视频信息
 function getInfo() {
-	var aid = getQueryVar('aid');
+	var aid = $.getQueryVar('aid');
 	$.getJSON('https://api.bilibili.com/x/web-interface/view?aid=' + aid, function (result) {
-		var title = result.data.title
-		var view = result.data.stat.view
-		var danmaku = result.data.stat.danmaku
-		var like = result.data.stat.like
-		var coin = result.data.stat.coin
-		var favorite = result.data.stat.favorite
-
+		var title = result.data.title;
+		var view = result.data.stat.view;
+		var danmaku = result.data.stat.danmaku;
+		var like = result.data.stat.like;
+		var coin = result.data.stat.coin;
+		var favorite = result.data.stat.favorite;
 		$('.items').empty();
 		//标题、播放量、弹幕量
 		$('.items').append("<div class='item' id='title' tabIndex='0'><a id='title'>" + title + "</a><br><div id='info'><div id='view'><img src='../img/inside_icon/play/view.svg'><a id='view'>" + view + "</a></div><div id='danmaku'><img src='../img/inside_icon/play/danmaku.svg'><a id='danmaku'>" + danmaku + "</a></div></div></div>")
 		//点赞、投币、收藏
 		$('.items').append("<div class='item' id='sanlian' tabIndex='1'><div id='like'><img src='../img/inside_icon/play/like.svg'><a id='like'>" + like + "</a></div><div id='coin'><img src='../img/inside_icon/play/coin.svg'><a id='coin'>" + coin + "</a></div><div id='favorite'><img src='../img/inside_icon/play/favorite.svg'><a id='favorite'>" + favorite + "</a></div></div>")
 		//空项
-		$('.items').append("<div class='item' id='desc' tabIndex='2'><p>" + result.data.desc + "</p></div> ")
-
+		$('.items').append("<div class='item' id='desc' tabIndex='2'><p>" + result.data.desc + "</p></div> ");
 		uid = result.data.owner.mid;
 		username = result.data.owner.name;
 		getIsLike(uid);
 		document.querySelectorAll('.item')[0].focus();
 	});
 }
-
 //切换全屏（指通知栏是否显示）
 function toggleFullScreen() {
 	if (!document.fullscreenElement) {
@@ -192,7 +161,6 @@ function toggleFullScreen() {
 		}
 	}
 }
-
 /*  D-Pad  */
 //设置按键函数
 function handleKeydown(e) {
@@ -219,10 +187,9 @@ function handleKeydown(e) {
 			if ($('#player').attr('class') == 'video_fullscreen') {
 				document.exitFullscreen();
 				$('#player').attr('class', 'video_normal');
-			} else {
-				//window.history.back(1);
-				//alert(window.location.search.substring(1));
-				window.location.href = '../index.html?ref=' + getQueryVar('ref')
+			}
+			else {
+				window.location.href = '../index.html?ref=' + $.getQueryVar('ref')
 			}
 			break;
 		case 'Q':
@@ -254,8 +221,6 @@ function handleKeydown(e) {
 			break;
 	}
 }
-
-
 function refreshLike() {
 	$.ajaxSettings.async = false; //临时设置为同步请求
 	var data = localStorage.getItem('like'); //读取数据
@@ -271,10 +236,7 @@ function refreshLike() {
 	})
 	localStorage.setItem('like', JSON.stringify(data)) //将数组转换后存储数据
 	$.ajaxSettings.async = true; //记得改回来
-
 }
-
-
 //关注用户
 function LikeUser(uid) {
 	var result = localStorage.getItem('like') //从本地获取信息 
@@ -295,7 +257,6 @@ function UnLikeUser(uid) {
 	} catch (e) {
 		result = [];
 	}
-
 	for (var i = 0; i < result.length; i++) {
 		if (result[i].uid === uid) {
 			result.splice(i, 1);
@@ -305,28 +266,42 @@ function UnLikeUser(uid) {
 	localStorage.setItem('like', JSON.stringify(result)) //将数组转换后存储数据
 	refreshLike();
 }
-
 function SoftRight() {
-	if ($('#softkey-right').text() === '加载中' || $('#player').attr('class') == 'video_fullscreen') {
-		return;
-	}
-	var islike = $('#softkey-right').text() === '取消关注';
-	if (islike) {
-		//取消关注
-		if (confirm('确定取消关注"' + username + '"吗？')) {
-			UnLikeUser(uid);
-			$('#softkey-right').text('关注');
+	if (tab_location == 0) {
+		if ($('#softkey-right').text() === '加载中' || $('#player').attr('class') == 'video_fullscreen') {
+			return;
+		}
+		var islike = $('#softkey-right').text() === '取消关注';
+		if (islike) {
+			//取消关注
+			if (confirm('确定取消关注"' + username + '"吗？')) {
+				UnLikeUser(uid);
+				$('#softkey-right').text('关注');
+			}
+		}
+		else {
+			//关注
+			if (confirm('确定关注"' + username + '"吗？')) {
+				LikeUser(uid);
+				$('#softkey-right').text('取消关注');
+			}
 		}
 	}
-	else {
-		//关注
-		if (confirm('确定关注"' + username + '"吗？')) {
-			LikeUser(uid);
-			$('#softkey-right').text('取消关注');
+	else if (tab_location == 1) {
+		var text = prompt("请输入您的评论", "");
+		if (text != '') {
+			var aid = $.getQueryVar('aid');
+			var result = $.sendComment(aid, text);
+			try {
+				if (result.success_action == 0)
+					alert(result.success_toast);
+			}
+			catch (e) {
+				alert('发送失败！');
+			}
 		}
 	}
 }
-
 //设置导航键函数
 var tab_location = 0;//设置header位置
 function nav(move) {
@@ -340,7 +315,6 @@ function nav(move) {
 		else if (next < 0) {
 			next = 0;
 		}
-
 		const targetElement = items[next];
 		if (targetElement) {
 			targetElement.focus();
@@ -353,10 +327,8 @@ function nav(move) {
 		} else {
 			var video = document.getElementById("player");
 			if (video.paused == true) {
-
 				$('#softkey-center').text('播放');
 			} else {
-
 				$('#softkey-center').text('暂停');
 			}
 		}
@@ -364,7 +336,6 @@ function nav(move) {
 	else if (tab_location === 1) {
 		const currentIndex = document.activeElement.tabIndex;
 		var next = currentIndex + move;
-
 		const items = document.querySelectorAll('.itemcomment');
 		if (next >= items.length) {
 			next = items.length - 1;
@@ -372,7 +343,6 @@ function nav(move) {
 		else if (next < 0) {
 			next = 0;
 		}
-
 		const targetElement = items[next];
 		if (targetElement) {
 			targetElement.focus();
@@ -382,7 +352,6 @@ function nav(move) {
 		}
 	}
 }
-
 function tab(move) {
 	const currentIndex = parseInt($('.focus').attr('tabIndex')); //获取目前带有focus的元素的tabIndex
 	var next = currentIndex + move; //设置移动位置
@@ -402,13 +371,18 @@ function tab(move) {
 	tab_location = next;
 	if (tab_location == 0) {
 		$('#softkey-left').text('全屏');
+		if (islike) {
+			$('#softkey-right').text("取消关注");
+		} else {
+			$('#softkey-right').text("关注");
+		}
 	}
 	else if (tab_location == 1) {
 		$('#softkey-left').text('下一页');
+		$('#softkey-right').text('发表评论');
 	}
 	load()
 }
-
 function load() {
 	switch (tab_location) {
 		case 0: //简介
@@ -421,7 +395,6 @@ function load() {
 			break;
 	}
 }
-
 function softLeft() {
 	switch (tab_location) {
 		case 0: //简介
@@ -430,7 +403,6 @@ function softLeft() {
 			break;
 	}
 }
-
 function enter() {
 	switch (tab_location) {
 		case 0: //简介  
@@ -472,7 +444,7 @@ function getIsLike(uid) {
 		$('#softkey-right').text("关注");
 		return;
 	}
-	var islike = 0;
+	islike = 0;
 	for (var i = 0; i < result.length; i++) {
 		if (result[i].uid === uid) {
 			islike = 1;
@@ -485,12 +457,10 @@ function getIsLike(uid) {
 		$('#softkey-right').text("关注");
 	}
 }
-
 //设置触发器
 document.activeElement.addEventListener('keydown', handleKeydown);
-
 /*  刚开应用该干啥  */
 //设置播放内容
-playV(getQueryVar('aid'), getQueryVar('cid'), getQueryVar('bvid'), '1');
+playV($.getQueryVar('aid'), $.getQueryVar('cid'), $.getQueryVar('bvid'), '1');
 getInfo();
 getIsLike()

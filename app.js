@@ -3,6 +3,10 @@ const android = {
     key: '1d8b6e7d45233436',
     secret: '560c52ccd288fed045859ed18bffd973'
 };
+const web = {
+    key: '84956560bc028eb7',
+    secret: '94aba54af9065f71de72f5508f1cd42e'
+};
 const tv = {
     key: '4409e2ce8ffd12b8',
     secret: '59b43e04ad6965f34319062b478f83dd'
@@ -69,7 +73,7 @@ $.extend({
     },
     getSign: function (url, secret) {
         if (typeof secret == 'undefined')
-            secret = androidSecret;
+            secret = android.Secret;
         var str = url.substring(url.indexOf("?", 4) + 1);
         var list = str.split('&');
         list.sort();
@@ -88,6 +92,16 @@ $.extend({
         if (ts.length > 10)
             ts = ts.substring(0, 10);
         return ts;
+    },
+    //获取url传值
+    getQueryVar: function (variable) {
+        var query = window.location.search.substring(1);
+        var vars = query.split("&");
+        for (var i = 0; i < vars.length; i++) {
+            var pair = vars[i].split("=");
+            if (pair[0] == variable) { return pair[1]; }
+        }
+        return (false);
     }
 });
 
