@@ -303,6 +303,14 @@ function handleKeydown(e) {
             window.location.href = './bangmi/index.html?type=1';
             break;
           }
+          case 2: {
+            window.location.href = './lives/index.html';
+            break;
+          }
+          case 3: {
+            window.location.href = './user/index.html';
+            break;
+          }
         }
       }
       break;
@@ -466,7 +474,11 @@ function load() {
       break;
     case 4: {
       $('.items').empty();
-      $('.items').append('<div tabIndex="0" class="item small">番剧</div><div tabIndex="1" class="item small">国创</div>');
+      var rows = '<div tabIndex="0" class="item small">番剧</div>' +
+        '<div tabIndex="1" class="item small">国创</div>' +
+        '<div tabIndex="2" class="item small">直播分区</div>' +
+        '<div tabIndex="3" class="item small">用户</div>';
+      $('.items').append(rows);
       softkey('选择', '', '选项');
       break;
     }
@@ -554,13 +566,11 @@ function addByUserId() {
       "Referer": "https://www.bilibili.com"
     }
   });
-
 }
 
 var searchPage = 1;
 var searchdata = "";
 function searchData() {
-
   if (thisRef.searchPage) {
     searchPage = thisRef.searchPage;
     thisRef.searchPage = 0;
@@ -569,11 +579,8 @@ function searchData() {
     searchdata = thisRef.searchdata;
     thisRef.searchdata = '';
   }
-
   if (searchPage === 1) {
-    if (searchdata) {
-
-    }
+    if (searchdata) { }
     else {
       if ($('#searchInput').val()) {
         var searchtext = $('#searchInput').val();
@@ -590,12 +597,9 @@ function searchData() {
         return;
       }
     }
-
   }
   else {
-    if (searchdata) {
-
-    }
+    if (searchdata) { }
     else {
       searchPage = 1;
       var searchtext = $('#searchInput').val();
@@ -608,8 +612,6 @@ function searchData() {
       }
     }
   }
-
-
   var searchurl = "https://api.bilibili.com/x/web-interface/search/type?keyword=" + searchdata + "&search_type=video&page=" + searchPage;
   ajax = $.getJSON(searchurl, function (result) {
     if (result.data.result) {
