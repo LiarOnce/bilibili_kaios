@@ -1,7 +1,7 @@
 {
   "name": "哔哩哔哩",
-  "description": "哔哩哔哩 KaiOS 版",
-  "version": "1.6",
+  "description": "哔哩哔哩KaiOS版",
+  "version": "1.7",
   "launch_path": "/index.html",
   "type": "privileged",
   "origin": "app://kai.baiyang.bilibili",
@@ -9,7 +9,7 @@
     "56": "/img/icons/icon56x56.png"
   },
   "developer": {
-    "name": "白羊座的一只狼,修改 by zixing",
+    "name": "白羊座的一只狼/zixing/michael_eddy",
     "url": "http://www.bilibili.com/"
   },
   "permissions": {
