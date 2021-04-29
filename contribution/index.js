@@ -65,7 +65,6 @@ function handleKeydown(e) {
     }
 }
 
-
 var current = 0;
 function nav(move) {
     var next = current + move;
