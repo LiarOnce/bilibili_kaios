@@ -89,8 +89,6 @@ function appendComments(item, tabIndex) {
   var content = item.text;   //评论内容
   var uname = item.nickname; //用户名 
   var ctime = item.timeline; //评论时间
-
-
   $('.items').append('<div class="itemcomment" tabIndex="' + tabIndex + '"><div class="commenthead"> <div class="user-info"><p>' + uname + '</p><span>' + ctime + '</span></div> </div> <div class="comment"> <p>' + content + '</p></div></div>')
 }
 
@@ -127,17 +125,14 @@ function getComments(page) {
   });
 };
 
-
 function load() {
   switch (tab_location) {
     case 0: //简介
       getLiveRoomNumer($.getQueryVar('uid'))
       var video = document.getElementById("player");
       if (video.paused == true) {
-
         $('#softkey-center').text('播放');
       } else {
-
         $('#softkey-center').text('暂停');
       }
       break;
@@ -147,7 +142,6 @@ function load() {
       break;
   }
 }
-
 
 //设置导航键函数
 var tab_location = 0;//设置header位置
@@ -162,7 +156,6 @@ function nav(move) {
     else if (next < 0) {
       next = 0;
     }
-
     const targetElement = items[next];
     if (targetElement) {
       targetElement.focus();
@@ -171,7 +164,6 @@ function nav(move) {
     if (next == 0) {
       $('.items').scrollTop(0);
     }
-
   }
   else if (tab_location === 1) {
     const currentIndex = document.activeElement.tabIndex;
@@ -184,7 +176,6 @@ function nav(move) {
     else if (next < 0) {
       next = 0;
     }
-
     const targetElement = items[next];
     if (targetElement) {
       targetElement.focus();
@@ -272,7 +263,6 @@ function handleKeydown(e) {
       enter();
       break;
     case 'Backspace':
-      //window.history.back(1);
       window.location.href = '../index.html?ref=' + $.getQueryVar('ref')
       break;
     case 'Q':

@@ -18,7 +18,7 @@
   padding: 3px 5px;
 }
 
-#softkeys>* {
+#softkeys > * {
   display: inline-block;
   width: 72px;
   padding: 0 5px;
@@ -74,7 +74,7 @@
 }
 
 .item.select {
-  background-color: #00a1d6;
+  background-color: #d26585;
   color: white;
 }
 

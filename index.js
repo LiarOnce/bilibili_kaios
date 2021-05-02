@@ -53,7 +53,7 @@ function appendA(uid, nick, sub, image, tabIndex) {
 }
 //添加直播
 function appendZ(uid, nick, title, image, sub, tabIndex) {
-  $('.items').append("<div class='item' tabIndex='" + tabIndex + "' data-uid='" + uid + "' data-title='" + title + "'><img class='head2' src='" + image + "@100w_60h.jpg" + "'/><div class='title' style='left: 110px'>" + title + "</div><div class='author' style='left: 110px'>在线：" + sub + "</div></div>")
+  $('.items').append("<div class='item' tabIndex='" + tabIndex + "' data-uid='" + uid + "' data-title='" + title + "'><img class='head2' src='" + image + "@100w_60h.jpg" + "'/><div class='title' style='left: 110px'>" + title + "</div><div class='author' style='left: 106px'>" + nick + "&nbsp;&nbsp;在线：" + sub + "</div></div>")
 }
 //打开视频
 function openV() {

@@ -5,14 +5,17 @@ $(function () {
 function loadData() {
     var url = 'https://api.live.bilibili.com/xlive/app-interface/v2/index/getAllList?device=android&rec_page=1&relation_page=1&scale=xxhdpi';
     var result = $.getApi(url);
-    console.log(result);
     if (result.code == 0) {
         var rooms = result.data.room_list;
         if (rooms != null) {
             for (var index = 0; index < rooms.length; index++) {
                 var lists = rooms[index].list;
                 var module_info = rooms[index].module_info;
-                var html = '<div class="item"><div class="header">' + module_info.title + '</div><div class="roomlist">';
+                var aid = module_info.link.match(new RegExp(/&area_id=(\d+)/));
+                var paid = module_info.link.match(new RegExp(/parent_area_id=(\d+)/));
+                aid = $.getKeyValue(aid);
+                paid = $.getKeyValue(paid);
+                var html = '<div class="item" data-aid="' + aid + '" data-paid="' + paid + '"><div class="header">' + module_info.title + '</div><div class="roomlist">';
                 if (lists != null) {
                     for (var j = 0; j < lists.length; j++) {
                         html += '<div class="room" data-id="' + lists[j].uid + '">';
@@ -56,6 +59,14 @@ function handleKeydown(e) {
                 }
                 break;
             }
+        case 'Enter': {
+            const items = document.querySelectorAll('.item');
+            const targetElement = items[current];
+            var aid = $(targetElement).attr('data-aid');
+            var paid = $(targetElement).attr('data-paid');
+            window.location.href = '../allive/index.html?aid=' + aid + '&paid=' + paid;
+            break;
+        }
         case 'E':
         case 'Backspace':
         case 'SoftRight':

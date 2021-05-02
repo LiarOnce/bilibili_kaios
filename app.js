@@ -11,7 +11,6 @@ const tv = {
     key: '4409e2ce8ffd12b8',
     secret: '59b43e04ad6965f34319062b478f83dd'
 };
-
 $.extend({
     initApi: function () {
         $.ajaxSettings.xhr = function () {
@@ -102,6 +101,27 @@ $.extend({
             if (pair[0] == variable) { return pair[1]; }
         }
         return (false);
+    },
+    getKeyValue: function (value) {
+        var result = null;
+        if (value != null && typeof value == 'string') {
+            if (value.indexOf(':') > -1) {
+                var arr = value.split(':');
+                if (arr.length > 1)
+                    result = arr[1];
+            }
+            else if (value.indexOf('=') > -1) {
+                var arr = value.split('=');
+                if (arr.length > 1)
+                    result = arr[1];
+            }
+        }
+        else if (value instanceof Array) {
+            if (value.length > 0) {
+                result = this.getKeyValue(value[0]);
+            }
+        }
+        return result;
     }
 });
 
