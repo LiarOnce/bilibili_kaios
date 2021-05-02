@@ -1,10 +1,13 @@
+/* First of all */
 * {
   box-sizing: border-box;
   margin: 0 auto;
   padding: 0;
-  text-align: center;
+  font-size: 14px;
+  text-align: left;
 }
 
+/* Soft Keys */
 #softkeys {
   z-index: 100;
   position: fixed;
@@ -44,57 +47,34 @@
   text-align: center;
 }
 
-.tab {
-  width: 100%;
-  height: 30px;
-  position: fixed;
-  top: 0px;
-  background-color: white;
-  z-index: 2;
-}
-
-.tab li {
-  float: left;
-  list-style: none;
-  margin: 7.5;
-  font-size: 14px;
-  position: relative;
-  top: -3px;
-}
-
-.focus {
-  border-bottom: 3px solid #d26585;
-}
-
 .items {
-  width: 100%;
+  padding: 6px;
   height: calc(100% - 30px);
-  overflow-x: hidden;
-  overflow-y: auto;
-  z-index: 1;
-  margin-top: 30px;
   margin-bottom: 30px;
 }
 
-.item {
+.menu_info {
   display: flex;
-  justify-content: center;
-  font-size: 14px;
-  margin-top: 4px;
+  justify-content: flex-start;
 }
 
-.item:focus,
-.item.select {
-  background-color: #d26585;
-  color: white;
-}
-
-.item > img {
-  width: 60px;
+.menu_info > img {
+  height: 100%;
+  margin-top: 8px;
   margin-left: 4px;
+  max-width: 96px;
 }
 
-.item .info {
+.menu_info > .menu_desc {
   padding: 5px 0;
-  width: calc(100% - 60px);
+  width: calc(100% - 96px);
+}
+
+.item {
+  border: 1px solid gray;
+  padding: 2px 4px;
+}
+
+.item.select {
+  border: 1px solid #d26585;
 }

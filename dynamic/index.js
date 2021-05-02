@@ -157,7 +157,7 @@ function openLink() {
         }
         case 256: {
             var id = $(content).attr('data-id');
-            window.location.href = '../musicinfo/index.html?id=' + id;
+            window.location.href = '../songinfo/index.html?id=' + id;
             break;
         }
         case 512: {

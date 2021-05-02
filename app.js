@@ -64,7 +64,10 @@ $.extend({
         if (keyValue == undefined || keyValue == null || typeof keyValue == 'undefined')
             keyValue = android;
         var access_token = this.getData('access_token');
-        url += '&access_key=' + access_token + '&appkey=' + keyValue.key + '&platform=android&build=' + build + '&mobi_app=android&ts=' + this.getTs();
+        if (url.indexOf('?') > -1)
+            url += '&access_key=' + access_token + '&appkey=' + keyValue.key + '&platform=android&build=' + build + '&mobi_app=android&ts=' + this.getTs();
+        else
+            url += '?access_key=' + access_token + '&appkey=' + keyValue.key + '&platform=android&build=' + build + '&mobi_app=android&ts=' + this.getTs();
         url += "&sign=" + this.getSign(url, keyValue.secret);
         $.ajax({
             url: url,
