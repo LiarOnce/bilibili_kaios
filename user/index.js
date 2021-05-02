@@ -66,7 +66,7 @@ function navigate() {
             window.location.href = '../contribution/index.html?mid=' + userId;
             break;
         case 'dy':
-            window.location.href = '../dynamic/index.html';
+            window.location.href = '../dynamic/index.html?mid=' + userId;
             break;
         case 'ct':
             window.location.href = '../collection/index.html';

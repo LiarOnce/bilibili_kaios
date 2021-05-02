@@ -1,31 +1,52 @@
-let last_parm = '', userId = 0;
+let last_parm = '', userId = 0, self = false;
 let scrollHeight = 0;
 $(function () {
-    userId = $.getQueryVar('userId');
+    userId = $.getQueryVar('mid');
     if (userId === false)
         userId = $.getData('mid');
+    self = userId == $.getData('mid');
     loadData();
     document.activeElement.addEventListener('keydown', handleKeydown);
 });
 function loadData() {
-    if (last_parm == '') {
-        var url = 'https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?type_list=268435455&uid=' + userId;
-        var result = $.getApi(url);
-        if (result.code == 0) {
-            var cards = result.data.cards;
-            if (cards != null) {
-                for (var index = 0; index < cards.length; index++)
-                    addItem(cards[index]);
-                if (cards.length > 1)
-                    last_parm = cards[cards.length - 1].desc.dynamic_id;
+    if (self) {
+        if (last_parm == '') {
+            var url = 'https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?type_list=268435455&uid=' + userId;
+            var result = $.getApi(url);
+            if (result.code == 0) {
+                var cards = result.data.cards;
+                if (cards != null) {
+                    for (var index = 0; index < cards.length; index++)
+                        addItem(cards[index]);
+                    if (cards.length > 1)
+                        last_parm = cards[cards.length - 1].desc.dynamic_id;
+                }
+            }
+            else {
+                alert('获取动态失败！' + result.message);
             }
         }
         else {
-            alert('获取动态失败！' + result.message);
+            var url = 'https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_history?offset_dynamic_id=' + last_parm + '&type_list=268435455&uid=' + userId;
+            var result = $.getApi(url);
+            if (result.code == 0) {
+                var cards = result.data.cards;
+                if (cards != null) {
+                    for (var index = 0; index < cards.length; index++)
+                        addItem(cards[index]);
+                    if (cards.length > 1)
+                        last_parm = cards[cards.length - 1].desc.dynamic_id;
+                }
+            }
+            else {
+                alert('获取动态失败！' + result.message);
+            }
         }
     }
     else {
-        var url = 'https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_history?offset_dynamic_id=' + last_parm + '&type_list=268435455&uid=' + userId;
+        var mid = $.getData('mid');
+        var url = 'https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/space_history?offset_dynamic_id=' + last_parm + '&visitor_uid=' +
+            mid + '&host_uid=' + userId + '&need_top=1';
         var result = $.getApi(url);
         if (result.code == 0) {
             var cards = result.data.cards;
