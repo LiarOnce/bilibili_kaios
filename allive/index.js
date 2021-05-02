@@ -14,11 +14,13 @@ function loadData() {
         if (arr != null) {
             for (var index = 0; index < arr.length; index++) {
                 var uid = arr[index].uid;
-                var title = arr[index].title;
-                var image = arr[index].cover;
                 var nick = arr[index].uname;
                 var sub = arr[index].online;
-                $('#container').append("<div class='item' data-uid='" + uid + "' data-title='" + title + "'><img class='head2' src='" + image + "@100w_60h.jpg" + "'/><div class='title' style='left: 110px'>" + title + "</div><div class='author' style='left: 106px'>" + nick + "&nbsp;&nbsp;在线：" + sub + "</div></div>")
+                var title = arr[index].title;
+                var image = arr[index].cover;
+                $('#container').append("<div class='item' data-uid='" + uid + "' data-title='" + title + "'><img class='head2' src='" + image +
+                    "@100w_60h.jpg'/><div class='title' style='left: 110px'>" + title + "</div><div class='author' style='left: 106px'>" + nick + "&nbsp;&nbsp;在线："
+                    + sub + "</div></div>")
             }
         }
         else {

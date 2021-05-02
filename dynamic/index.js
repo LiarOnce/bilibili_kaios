@@ -1,4 +1,5 @@
 let last_parm = '', userId = 0;
+let scrollHeight = 0;
 $(function () {
     userId = $.getQueryVar('userId');
     if (userId === false)
@@ -54,8 +55,7 @@ function addItem(item) {
             switch (item.desc.type) {
                 case 1: {
                     var content = card.item.content;
-                    html += '<div class="content" data-type="1"><div class="desc">' + content + '</div>';
-
+                    html += '<div class="content" data-type="1" data-id="' + dynamic_id + '"><div class="desc">' + content + '</div>';
 
                     html + '</div>';
                     break;
@@ -63,7 +63,7 @@ function addItem(item) {
                 case 2: {
                     var desc = card.item.description;
                     var pictures = card.item.pictures;
-                    html += '<div class="content" data-type="2"><div class="desc">' + desc + '</div>';
+                    html += '<div class="content" data-type="2" data-id="' + dynamic_id + '"><div class="desc">' + desc + '</div>';
                     if (pictures != null && pictures.length > 0) {
                         var src = buildImageGrid(pictures);
                         html += src;
@@ -73,13 +73,17 @@ function addItem(item) {
                 }
                 case 4: {
                     var content = card.item.content;
-                    html += '<div class="content" data-type="4"><div class="desc">' + content + '</div></div>';
+                    html += '<div class="content" data-type="4" data-id="' + dynamic_id + '"><div class="desc">' + content + '</div></div>';
                     break;
                 }
                 case 8: {
+                    var aid = card.aid;
+                    var cid = card.cid;
+                    var bvid = item.desc.bvid;
                     var view = card.stat.view;
                     var danmaku = card.stat.danmaku;
-                    html += '<div class="content" data-type="8"><div class="desc">' + card.desc + '</div><div class="video"><img src="' + card.pic + '@96w_60h.jpg" /><div class="info"><p>' +
+                    html += '<div class="content" data-type="8" data-aid="' + aid + '" data-cid="' + cid + '" data-bvid="' + bvid + '"><div class="desc">' + card.desc
+                        + '</div><div class="video"><img src="' + card.pic + '@96w_60h.jpg" /><div class="info"><p>' +
                         card.title + '</p><p>播放：' + view + '</p><p>弹幕：' + danmaku + '</p></div></div></div>';
                     break;
                 }
@@ -92,19 +96,35 @@ function addItem(item) {
                         card.title + '</p><p>浏览：' + view + '</p><p>点赞' + like + '</p></div></div></div>';
                     break;
                 }
+                case 256: {
+                    var id = card.id;
+                    var cover = card.cover;
+                    html += '<div class="content" data-type="256" data-id="' + id + '"><div class="video"><img src="' + cover + '@96w_60h.jpg" /><div class="info"><p>' +
+                        card.title + '</p></div></div></div>';
+                    break;
+                }
                 case 512: {
                     var play = card.stat.play;
+                    var id = card.season.season_id;
                     var danmaku = card.stat.danmaku;
                     var ts = parseFloat(card.player_info.expire_time + '000')
                     var dt = new Date(ts);
                     var time = dt.getFullYear() + '-' + (dt.getMonth() + 1) + '-' + dt.getDate() + '  ' + dt.getHours() + ':' + dt.getMinutes() + '更新';
-                    html += '<div class="content" data-type="512"><div class="desc">' + time + '</div><div class="video"><img src="' + card.season.cover + '@96w_60h.jpg" /><div class="info"><p>' +
-                        card.card_show_title + '</p><p>播放：' + play + '</p><p>弹幕：' + danmaku + '</p></div></div></div>';
+                    html += '<div class="content" data-type="512" data-id="' + id + '"><div class="desc">' + time + '</div><div class="video"><img src="' + card.season.cover +
+                        '@96w_60h.jpg" /><div class="info"><p>' + card.card_show_title + '</p><p>播放：' + play + '</p><p>弹幕：' + danmaku + '</p></div></div></div>';
+                    break;
+                }
+                case 2048: {
+                    var title = card.sketch.title;
+                    var desc = card.vest.desc_text;
+                    var cover = card.sketch.cover_url;
+                    var link = card.sketch.target_url;
+                    html += '<div class="content" data-type="8" data-link="' + link + '"><div class="desc">' + desc + '</div><div class="video"><img src="' + cover
+                        + '@96w_60h.jpg" /><div class="info"><p>' + title + '</p><p>' + card.sketch.desc_text + '</p></div></div></div>';
                     break;
                 }
                 default: {
-                    console.log(card)
-                    console.log(item.desc.type)
+                    html += '<div>不支持的类型:' + item.desc.type + '</div>';
                     break;
                 }
             }
@@ -122,21 +142,48 @@ function openLink() {
     const targetElement = items[current];
     var content = $(targetElement).find('.content');
     var type = $(content).attr('data-type');
-    switch (type) {
+    switch (parseInt(type)) {
+        case 8: {
+            var aid = $(content).attr('data-aid');
+            var cid = $(content).attr('data-cid');
+            var bvid = $(content).attr('data-bvid');
+            window.location.href = '../player/index.html?aid=' + aid + '&cid=' + cid + '&bvid=' + bvid;
+            break;
+        }
         case 64: {
             var id = $(content).attr('data-id');
-            window.location.href = '../article/index.html?id=' + id;
+            window.location.href = '../web/index.html?id=' + id;
+            break;
+        }
+        case 256: {
+            var id = $(content).attr('data-id');
+            window.location.href = '../musicinfo/index.html?id=' + id;
+            break;
+        }
+        case 512: {
+            var id = $(content).attr('data-id');
+            window.location.href = '../bandetail/index.html?id=' + id;
+            break;
+        }
+        case 2048: {
+            var link = $(content).attr('data-link');
+            sessionStorage.setItem('link', link);
+            window.location.href = '../web/index.html';
+            break;
+        }
+        default: {
+            var id = $(content).attr('data-id');
+            window.location.href = '../dydetail/index.html?id=' + id;
             break;
         }
     }
 }
 function buildImageGrid(pics) {
-    var html = '<div class="grid">';
+    var html = '<div class="grid ' + ((len == 3 || len > 4) ? 'row2' : 'row3') + '">';
     var len = pics.length, row2 = window.innerWidth / 2, row3 = window.innerWidth / 3;
-    var cw = (len == 3 || len > 4) ? row3 : row2;
-    for (var index = 0; index < len; index++) {
+    var cw = Math.floor((len == 3 || len > 4) ? row3 : row2);
+    for (var index = 0; index < len; index++)
         html += '<img src="' + pics[index].img_src + '@96w_60h.jpg" style="max-width:' + cw + 'px" />';
-    }
     return html + '</div>';
 }
 function handleKeydown(e) {
@@ -177,5 +224,14 @@ function nav(move) {
         targetElement.focus();
         $('.item').removeClass('select');
         $(targetElement).addClass('select');
+        var h = $(targetElement).height();
+        if (move > 0) {
+            scrollTo(0, scrollHeight);
+            scrollHeight += h;
+        }
+        else {
+            scrollHeight -= h;
+            scrollTo(0, scrollHeight);
+        }
     }
 }

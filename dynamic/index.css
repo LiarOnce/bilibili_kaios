@@ -74,6 +74,7 @@
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  max-height: 40px;
 }
 
 .item .user_info {
@@ -100,12 +101,14 @@
   text-align: left;
 }
 
-.item .grid img.row2 {
-  width: 50%;
-  height: 100%;
+.item .grid.row2 {
+  display: grid;
+  grid-template-rows: repeat(2, 50%);
+  grid-template-columns: repeat(2, 50%);
 }
 
-.item .grid img.row3 {
-  width: 33%;
-  height: 100%;
+.item .grid.row3 {
+  display: grid;
+  grid-template-rows: repeat(3, 33.33%);
+  grid-template-columns: repeat(3, 33.33%);
 }

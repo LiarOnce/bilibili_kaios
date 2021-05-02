@@ -642,7 +642,6 @@ function refreshLive() {
   $.ajaxSettings.async = false; //临时设置为同步请求
   var data = localStorage.getItem('live'); //读取数据
   data = JSON.parse(data); //将字符串转换为JSON
-
   $.each(data, function (r, item) { //给每一个uid更新数据 
     ajax = $.getJSON(roominiturl + item.room_id, function (result) {  //获取房间信息
       if (result.code != 0) {
