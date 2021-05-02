@@ -16,8 +16,8 @@
     "attention": {},
     "browser": {},
     "mobilenetwork": {},
-	"systemXHR" : {}
+    "systemXHR": {}
   },
   "ime_default_softkey_bar": true,
-  "theme_color": "#00a1d6"
+  "theme_color": "#d26585"
 }

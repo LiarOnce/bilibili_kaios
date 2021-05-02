@@ -25,7 +25,7 @@
 }
 
 .focus {
-  border-bottom: 3px solid #00a1d6;
+  border-bottom: 3px solid #d26585;
 }
 
 /* Item */
@@ -50,7 +50,7 @@
 }
 
 .item:focus {
-  background-color: #00a1d6;
+  background-color: #d26585;
   color: white;
 }
 
@@ -188,6 +188,6 @@
   max-height: 60px;
 }
 .itemcomment:focus {
-  background-color: #00a1d6;
+  background-color: #d26585;
   color: white;
 }
