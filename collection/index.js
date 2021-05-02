@@ -8,14 +8,19 @@ $(function () {
     var url = 'https://api.bilibili.com/medialist/gateway/base/created?channel=bilih5&pn=1&ps=20&type=2&up_mid=' + userId;
     var result = $.getApi(url);
     if (result.code == 0) {
-        var arr = result.data.list, options = '';
-        for (var index = 0; index < arr.length; index++) {
-            var item = arr[index];
-            options += '<li class="menuitem" value="' + item.fid + '">' + item.title + '</li>';
+        try {
+            var arr = result.data.list, options = '';
+            for (var index = 0; index < arr.length; index++) {
+                var item = arr[index];
+                options += '<li class="menuitem" value="' + item.fid + '">' + item.title + '</li>';
+            }
+            fid = arr[0].fid;
+            loadBox();
+            $('#menucontainer').append(options);
         }
-        fid = arr[0].fid;
-        loadBox();
-        $('#menucontainer').append(options);
+        catch (e) {
+            console.log(e);
+        }
     }
     else {
         alert('获取收藏夹失败！');
@@ -50,8 +55,10 @@ function handleKeydown(e) {
             }
             showhideMenu();
             break;
-        case 'Enter':
         case 'Backspace':
+            window.location.href = '../user/index.html?mid=' + userId;
+            break;
+        case 'Enter':
             if (!isOpen) {
                 page++;
                 loadBox();

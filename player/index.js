@@ -219,6 +219,29 @@ function handleKeydown(e) {
 		case '8':
 			navigator.volumeManager.requestDown();
 			break;
+		case '4':
+			seekTo(-1);
+			break;
+		case '6':
+			seekTo(1);
+			break;
+	}
+}
+function seekTo(type) {
+	try {
+		var player = document.getElementById('player');
+		if (!isNaN(player.duration)) {
+			var next = player.currentTime + (type * 10);
+			if (next < 0)
+				next = 0;
+			else if (next > player.duration)
+				next = player.duration;
+			player.currentTime = next;
+			player.play();
+		}
+	}
+	catch (e) {
+		console.log(e);
 	}
 }
 function refreshLike() {

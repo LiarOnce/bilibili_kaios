@@ -30,7 +30,7 @@ function handleKeydown(e) {
         case 'E':
         case 'Backspace':
         case 'SoftRight':
-            window.location.href = '../user/index.html';
+            window.location.href = '../user/index.html?mid=' + userId;
             break;
     }
 }
