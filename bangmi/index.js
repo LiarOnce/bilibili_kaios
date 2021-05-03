@@ -91,7 +91,7 @@ function handleKeydown(e) {
             const items = document.querySelectorAll('.item');
             const targetElement = items[current];
             var id = $(targetElement).attr('data-id');
-            window.location.href = '../detail/index.html?id=' + id;
+            window.location.href = '../bandetail/index.html?id=' + id;
             break;
         }
         case 'E':

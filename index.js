@@ -308,6 +308,10 @@ function handleKeydown(e) {
             break;
           }
           case 3: {
+            window.location.href = './music/index.html';
+            break;
+          }
+          case 4: {
             window.location.href = './user/index.html';
             break;
           }
@@ -477,7 +481,8 @@ function load() {
       var rows = '<div tabIndex="0" class="item small">番剧</div>' +
         '<div tabIndex="1" class="item small">国创</div>' +
         '<div tabIndex="2" class="item small">直播分区</div>' +
-        '<div tabIndex="3" class="item small">用户</div>';
+        '<div tabIndex="3" class="item small">音乐</div>' +
+        '<div tabIndex="4" class="item small">用户</div>';
       $('.items').append(rows);
       softkey('选择', '', '选项');
       break;
@@ -642,7 +647,6 @@ function refreshLive() {
   $.ajaxSettings.async = false; //临时设置为同步请求
   var data = localStorage.getItem('live'); //读取数据
   data = JSON.parse(data); //将字符串转换为JSON
-
   $.each(data, function (r, item) { //给每一个uid更新数据 
     ajax = $.getJSON(roominiturl + item.room_id, function (result) {  //获取房间信息
       if (result.code != 0) {

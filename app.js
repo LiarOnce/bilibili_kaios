@@ -40,12 +40,34 @@ $.extend({
         });
         return json;
     },
+    postApiAsync: function (url, content, callback, keyValue) {
+        if (keyValue == undefined || keyValue == null || typeof keyValue == 'undefined')
+            keyValue = android;
+        var access_token = this.getData('access_token');
+        content += '&access_key=' + access_token + '&appkey=' + keyValue.key + '&mobi_app=android&platform=android&ts=' + this.getTs();
+        content += "&sign=" + this.getSign(content, keyValue.secret);
+        $.ajax({
+            url: url,
+            data: content,
+            type: 'post',
+            async: true,
+            headers: {
+                'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Mobile Safari/537.36'
+            },
+            success: function (data) {
+                callback(data);
+            }
+        });
+    },
     getApi: function (url, keyValue) {
         var json = null;
         if (keyValue == undefined || keyValue == null || typeof keyValue == 'undefined')
             keyValue = android;
         var access_token = this.getData('access_token');
-        url += '&access_key=' + access_token + '&appkey=' + keyValue.key + '&platform=android&build=' + build + '&mobi_app=android&ts=' + this.getTs();
+        if (url.indexOf('?') > -1)
+            url += '&access_key=' + access_token + '&appkey=' + keyValue.key + '&platform=android&build=' + build + '&mobi_app=android&ts=' + this.getTs();
+        else
+            url += '?access_key=' + access_token + '&appkey=' + keyValue.key + '&platform=android&build=' + build + '&mobi_app=android&ts=' + this.getTs();
         url += "&sign=" + this.getSign(url, keyValue.secret);
         $.ajax({
             url: url,
@@ -60,6 +82,24 @@ $.extend({
         });
         return json;
     },
+    getApiAsync: function (url, callback, keyValue) {
+        if (keyValue == undefined || keyValue == null || typeof keyValue == 'undefined')
+            keyValue = android;
+        var access_token = this.getData('access_token');
+        url += '&access_key=' + access_token + '&appkey=' + keyValue.key + '&platform=android&build=' + build + '&mobi_app=android&ts=' + this.getTs();
+        url += "&sign=" + this.getSign(url, keyValue.secret);
+        $.ajax({
+            url: url,
+            type: "get",
+            async: true,
+            headers: {
+                'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Mobile Safari/537.36'
+            },
+            success: function (data) {
+                callback(data);
+            }
+        });
+    },
     getData: function (key) {
         try {
             var value = localStorage.getItem(key);
@@ -67,7 +107,9 @@ $.extend({
                 value = '';
             return value;
         }
-        catch (e) { }
+        catch (e) {
+            console.log(e);
+        }
         return '';
     },
     getSign: function (url, secret) {

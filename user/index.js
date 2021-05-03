@@ -2,7 +2,6 @@ let userId = 0;
 let isOpen = false, self = false;
 $(function () {
     var mid = $.getQueryVar('mid');
-    console.log(mid)
     if (mid === false) {
         self = true;
         var id = $.getData('mid');
@@ -67,7 +66,7 @@ function navigate() {
             window.location.href = '../contribution/index.html?mid=' + userId;
             break;
         case 'dy':
-            window.location.href = '../dynamic/index.html';
+            window.location.href = '../dynamic/index.html?mid=' + userId;
             break;
         case 'ct':
             window.location.href = '../collection/index.html';

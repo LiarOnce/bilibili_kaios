@@ -6,7 +6,8 @@
   "type": "privileged",
   "origin": "app://kai.baiyang.bilibili",
   "icons": {
-    "56": "/img/icons/icon56x56.png"
+    "56": "/img/icons/icon56x56.png",
+    "128": "/img/icons/icon128x128.png"
   },
   "developer": {
     "name": "白羊座的一只狼/zixing/michael_eddy",
