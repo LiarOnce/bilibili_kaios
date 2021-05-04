@@ -189,7 +189,19 @@ function handleKeydown(e) {
 				$('#player').attr('class', 'video_normal');
 			}
 			else {
-				window.location.href = '../index.html?ref=' + $.getQueryVar('ref')
+				var type = $.getQueryVar('type');
+				if (type === false)
+					window.location.href = '../index.html?ref=' + $.getQueryVar('ref');
+				else {
+					var id = $.getQueryVar('id');
+					var mid = $.getQueryVar('mid');
+					if (id === false && mid === false)
+						window.location.href = '../' + type + '/index.html';
+					else if (mid === false)
+						window.location.href = '../' + type + '/index.html?id=' + id;
+					else
+						window.location.href = '../' + type + '/index.html?mid=' + mid;
+				}
 			}
 			break;
 		case 'Q':

@@ -20,7 +20,7 @@ function playV() {
     var aid = $(targetElement).attr('data-aid');
     var bvid = $(targetElement).attr('data-bvid');
     var cid = $(targetElement).attr('data-cid');
-    window.location.href = '../player/index.html?aid=' + aid + '&bvid=' + bvid + '&cid=' + cid;
+    window.location.href = '../player/index.html?aid=' + aid + '&bvid=' + bvid + '&cid=' + cid + '&type=contribution&mid=' + userId;
 }
 
 function loadResource() {
