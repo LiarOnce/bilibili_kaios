@@ -41,7 +41,7 @@ function selectItem() {
     var aid = $(targetElement).attr('data-aid');
     var cid = $(targetElement).attr('data-cid');
     var bvid = $(targetElement).attr('data-bid');
-    window.location.href = '../player/index.html?aid=' + aid + '&bvid=' + bvid + '&cid=' + cid + '&season_type=' + season_type;
+    window.location.href = '../player/index.html?aid=' + aid + '&bvid=' + bvid + '&cid=' + cid + '&season_type=' + season_type + '&type=bandetail&id=' + id;
 }
 function load() {
     switch (tab_location) {

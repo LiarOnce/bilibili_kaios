@@ -50,7 +50,7 @@ function handleKeydown(e) {
                 const item = document.querySelectorAll('.item')[current];
                 if (typeof item != 'undefined') {
                     var aid = $(item).attr('data-aid'), cid = $(item).attr('data-cid');
-                    window.location.href = '../player/index.html?aid=' + aid + '&cid=' + cid;
+                    window.location.href = '../player/index.html?aid=' + aid + '&cid=' + cid + '&type=collection';
                 }
             }
             showhideMenu();

@@ -168,7 +168,7 @@ function openLink() {
             var aid = $(content).attr('data-aid');
             var cid = $(content).attr('data-cid');
             var bvid = $(content).attr('data-bvid');
-            window.location.href = '../player/index.html?aid=' + aid + '&cid=' + cid + '&bvid=' + bvid;
+            window.location.href = '../player/index.html?aid=' + aid + '&cid=' + cid + '&bvid=' + bvid + '&type=dynamic';
             break;
         }
         case 64: {
